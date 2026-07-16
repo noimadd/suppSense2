@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "suppSense",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "suppsense",
+      "Username": "devuser",
+      "SSLMode": "prefer"
+    }
+  }
+}
