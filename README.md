@@ -35,7 +35,7 @@ suppSense/
  
 - Node 20+
 - Docker
-- Expo Go app (Google Play/App Store)
+- Expo Go app [SDK-57](https://expo.dev/go)
 
 ## How to Run
 
