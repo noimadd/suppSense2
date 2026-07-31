@@ -23,8 +23,7 @@ suppSense/
 ├── packages/
 │   ├── shared-types/    # Shared Interfaces
 │   ├── api-client/      # Endpoints used by both mobile and desktop
-│   ├── ui/              # Shared UI components for consistency
-│   └── config/          # Shared configs
+│   └── ui/              # Shared UI components for consistency
 ├── docker-compose.yml
 ├── .env
 ├── .env.example
