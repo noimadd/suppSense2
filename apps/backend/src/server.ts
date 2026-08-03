@@ -7,6 +7,7 @@ import supplementsRouter from './routes/supplements.routes';
 // authentication routes
 import authRouter from './routes/auth.routes';
 import { requireAuth } from './middleware/auth.middleware';
+import { connectRedis } from './db/redis';
 
 
 const app = express();
@@ -20,4 +21,10 @@ app.use('/api/supplements', requireAuth, supplementsRouter);
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API listening on ${PORT}`));
+
+connectRedis().then(() => {
+    app.listen(PORT, () => console.log(`API listening on ${PORT}`));
+}).catch((err) => {
+    console.error('Failed to connect to Redis:', err);
+    process.exit(1);
+});

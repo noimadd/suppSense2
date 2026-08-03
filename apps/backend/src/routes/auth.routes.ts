@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getUserByEmail, updateLastLogin } from '../db/users';
-import { createSession, validateSession, refreshSession, deleteSession } from '../auth/sessions';
+import { createSession, getSession, refreshSession, deleteSession } from '../auth/sessions';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
 
     await updateLastLogin(user.id);
 
-    const { sessionId, refreshToken } = await createSession(user.id);
+    const { sessionId, refreshToken } = await createSession(user.id, user.email, user.user_type);
     const accessToken = signAccessToken(user.id, user.email, user.user_type, sessionId);
 
     res.json({ 
@@ -43,6 +43,34 @@ router.post('/login', async (req, res) => {
         refreshToken,
         sessionId,
     });
+});
+
+router.post('/refresh', async (req, res) => {
+    const { userId, sessionId, refreshToken } = req.body ?? {};
+
+    if (!userId || !sessionId || !refreshToken) {
+        return res.status(400).json({ message: 'userId, sessionId, and refreshToken are required.' });
+    }
+
+    const session = await getSession(userId, sessionId);
+    if (!session || session.refreshToken !== refreshToken) {
+        return res.status(401).json({ message: 'Invalid session or refresh token.' });
+    }   
+
+    await refreshSession(userId, sessionId);
+
+    const accessToken = signAccessToken(userId, session.email, session.userType, sessionId);
+    res.json({ accessToken });
+});
+
+router.post('/logout', async (req, res) => {
+    const { userId, sessionId } = req.body ?? {};
+
+    if (userId && sessionId) {
+        await deleteSession(userId, sessionId);
+    }
+
+    res.json({ message: 'Logged out successfully.' });
 });
 
 export default router;
