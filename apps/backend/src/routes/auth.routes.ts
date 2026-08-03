@@ -2,9 +2,19 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getUserByEmail, updateLastLogin } from '../db/users';
+import { createSession, validateSession, refreshSession, deleteSession } from '../auth/sessions';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_EXPIRATION = '1h';
+
+function signAccessToken(userId: string, email: string, userType: 'user' | 'admin', sessionId: string) {
+    return jwt.sign(
+        { sub: userId, email, userType, sid: sessionId },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRATION }
+    );
+}
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body ?? {};
@@ -25,13 +35,14 @@ router.post('/login', async (req, res) => {
 
     await updateLastLogin(user.id);
 
-    const token = jwt.sign(
-        { id: user.id, email: user.email, username: user.username, user_type: user.user_type },
-        JWT_SECRET,
-        { expiresIn: '1h' }
-    );
+    const { sessionId, refreshToken } = await createSession(user.id);
+    const accessToken = signAccessToken(user.id, user.email, user.user_type, sessionId);
 
-    res.json({ token });
+    res.json({ 
+        accessToken, 
+        refreshToken,
+        sessionId,
+    });
 });
 
 export default router;
