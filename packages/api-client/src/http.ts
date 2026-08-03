@@ -7,11 +7,11 @@
 import { API_BASE_URL, authHeader } from './config';
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers = { ...(await authHeader()), ...(options.headers ?? {}) };
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+    const headers = { ...(await authHeader()), ...(options.headers ?? {}) };
+    const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
 
-  if (!res.ok) {
-    throw new Error(`Request to ${path} failed: ${res.status}`);
-  }
-  return res.json();
+    if (!res.ok) {
+        throw new Error(`Request to ${path} failed: ${res.status}`);
+    }
+    return res.json();
 }
