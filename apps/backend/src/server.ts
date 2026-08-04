@@ -8,7 +8,7 @@ import supplementsRouter from './routes/supplements.routes';
 import authRouter from './routes/auth.routes';
 import { requireAuth } from './middleware/auth.middleware';
 import { connectRedis } from './db/redis';
-
+import { EMAIL_TRANSPORTER } from './middleware/email.middleware'
 
 const app = express();
 app.use(cors());
@@ -28,3 +28,7 @@ connectRedis().then(() => {
     console.error('Failed to connect to Redis:', err);
     process.exit(1);
 });
+// Check if our email service is up
+EMAIL_TRANSPORTER.verify().then(() => { console.log("Email server is ready"); }).catch((err) => {
+                                                                                           console.error('Connection to the mail server failed!');
+                                                                                       });
