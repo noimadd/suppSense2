@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID, randomInt } from 'crypto';
 import { redisClient } from '../db/redis';
 import { EMAIL_TRANSPORTER } from '../middleware/email.middleware';
 
@@ -6,7 +6,7 @@ const DEFAULT_CODE_TTL = 60 * 10; // 10 mins
 
 interface EmailVerificationData {
     email: string;
-    c_code: string;
+    code: string;
 }
 
 function EmailVerificationKey(user_email: string) {
@@ -16,7 +16,7 @@ function EmailVerificationKey(user_email: string) {
 // Todo(Leo): Return NULL if the user is being throttled so we know to throw an error back at them
 export async function CreateEmailVerificationChallenge(email: string): Promise<{ challenge_code: string } | null>
 {
-    const raw_code = crypto.randomInt(0, 1000000);
+    const raw_code = randomInt(0, 1000000);
     const code = raw_code.toString().padStart(6, '0');
     
     const data: EmailVerificationData = { email, code }; 
@@ -25,13 +25,13 @@ export async function CreateEmailVerificationChallenge(email: string): Promise<{
                               EX: DEFAULT_CODE_TTL,
                           });
     
-    return { code };
+    return { challenge_code: code };
 }
 
 export async function GetEmailVerificationChallenge(email: string): Promise<EmailVerificationData | null>
 {
     const data = await redisClient.get(EmailVerificationKey(email));
-    return data ? JSON.parse(data) as SessionData : null;
+    return data ? JSON.parse(data) as EmailVerificationData : null;
 }
 
 export async function DeleteEmailVerificationChallenge(email: string): Promise<void>

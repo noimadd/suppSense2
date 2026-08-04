@@ -29,6 +29,6 @@ connectRedis().then(() => {
     process.exit(1);
 });
 // Check if our email service is up
-EMAIL_TRANSPORTER.verify().then(() => { console.log("Email server is ready"); }).catch((err) => {
+EMAIL_TRANSPORTER.verify().then(() => { console.log("Email server is ready"); }).catch((err: any) => {
                                                                                            console.error('Connection to the mail server failed!');
                                                                                        });
