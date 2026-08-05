@@ -15,13 +15,13 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS Products (
-    id uuid BIGINT PRIMARY KEY DEFAULT gen_random_uuid(),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     ingredients JSONB, -- cannot directly verify existance with jsonb gotta figure out a way to link properly mhm
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS Ingredients (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -34,9 +34,9 @@ CREATE TABLE IF NOT EXISTS Ingredients (
     image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
-CREATE TABLE IF NOT EXISTS Data (
+CREATE TABLE IF NOT EXISTS LibraryData (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES users(id) ON DELETE CASCADE,
     library_name VARCHAR(255) NOT NULL,
@@ -44,4 +44,4 @@ CREATE TABLE IF NOT EXISTS Data (
     image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);

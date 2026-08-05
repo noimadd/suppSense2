@@ -77,9 +77,9 @@ router.post('/signup', async (req, res) => {
                 // Todo(Leo): Check if this user email has an outstanding requrest and rate limit them to prevent people getting their
                 // addresses spammed
                 
-                const { email, password } = req.body ?? {};
+                const { f_name, l_name, email, u_name, password } = req.body ?? {};
                 
-                if(!email || !password)
+                if(!f_name || !l_name || !email || !u_name || !password)
                 {
                     return res.status(400).json({ message: 'Email and password must be valid.' });
                 }
@@ -93,8 +93,20 @@ router.post('/signup', async (req, res) => {
                 // Make a new challenge and email the code to the user
                 const challenge = await CreateEmailVerificationChallenge(email);
                 
+                if(!challenge)
+                {
+                    return res.status(401).json({ message: 'Too many requests to signup this email, wait a few minutes.' });
+                }
+                
+                // Create our user object in the meantime
+                
+                await SendVerificationChallengeEmail(email, challenge.challenge_code);
                 
                 res.json({ message: 'Challenge has been started succesfully.'});
+            });
+
+router.post('/verify', async (req, res) => {
+                const { code } = req.body ?? {};
             });
 
 export default router;
