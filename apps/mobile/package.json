@@ -6,6 +6,7 @@
     "@suppsense/api-client": "*",
     "@suppsense/shared-types": "*",
     "expo": "57",
+    "expo-secure-store": "~57.0.1",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.0"
