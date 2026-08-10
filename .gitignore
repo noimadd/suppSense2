@@ -44,3 +44,6 @@ project.4coder
 # misc
 coverage/
 .eslintcache
+
+# postgres 
+pgadmin/servers.json
