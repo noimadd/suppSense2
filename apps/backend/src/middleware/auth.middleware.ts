@@ -6,6 +6,14 @@ if (!JWT_SECRET) {
     throw new Error('JWT_SECRET environment variable is not set');
 }
 
+/**
+ * middleware to require auth for protected routes
+ * 
+ * 
+ * checks for valid JWT in Authorization header
+ * sets req.user to decoded token if valid
+ * returns 401 Unauthorized if invalid or missing
+*/
 export function requireAuth(req: any, res: any, next: any) {
     const token = req.headers.authorization?.replace('Bearer ', '');
     

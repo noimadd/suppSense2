@@ -12,6 +12,11 @@ export interface User {
     email_verified: boolean;
 }
 
+/**
+ * gets a user by email
+ * @param email users email
+ * @returns all user data
+ */
 export async function getUserByEmail(email: string): Promise<User | null> {
     const result = await pool.query<User>(
         'SELECT * FROM users WHERE email = $1',
@@ -20,6 +25,10 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     return result.rows[0] ?? null;
 }
 
+/**
+ * updates the last login 
+ * @param userId uuid of user
+ */
 export async function updateLastLogin(userId: string): Promise<void> {
     await pool.query(
                      'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',

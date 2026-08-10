@@ -17,6 +17,8 @@ function signAccessToken(userId: string, email: string, userType: 'user' | 'admi
     );
 }
 
+// login route
+// expects email and password in the request body
 router.post('/login', async (req, res) => {
                 let { email, password } = req.body ?? {};
                 
@@ -53,6 +55,8 @@ router.post('/login', async (req, res) => {
                          });
             });
 
+// refresh route
+// uses userId, sessionId, and refreshToken to generate a new access token
 router.post('/refresh', async (req, res) => {
     const { userId, sessionId, refreshToken } = req.body ?? {};
 
@@ -65,12 +69,17 @@ router.post('/refresh', async (req, res) => {
         return res.status(401).json({ message: 'Invalid session or refresh token.' });
     }   
 
+    // refreshes session's TTL
     await refreshSession(userId, sessionId);
 
+    // generates a new access token
     const accessToken = signAccessToken(userId, session.email, session.userType, sessionId);
+    // returns new access token to client
     res.json({ accessToken });
 });
 
+// logout route
+// deletes the session from redis
 router.post('/logout', async (req, res) => {
     const { userId, sessionId } = req.body ?? {};
 
