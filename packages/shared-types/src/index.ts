@@ -1,25 +1,5 @@
 // Authentication related types
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface LoginResponse {
-    accessToken: string;
-    refreshToken: string;
-    sessionId: string;
-}
-
-export interface ApiErrorResponse {
-    message: string;
-}
-
-export interface AccessTokenResponse {
-    sub: string;
-    email: string;
-    userType: 'user' | 'admin';
-    sid: string;
-}
+export * from './auth';
 
 
 export interface Supplement {
