@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { configureApiClient } from '@suppsense/api-client';
 
 import LoginScreen from './src/pages/login_screen';
+import LogoutScreen from './src/pages/logout_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
 
 configureApiClient(getAccessToken);
 
 // to be replaced later with the actual main application
-function MainApp() {
+function MainApp({ onLoggedOut }: { onLoggedOut: () => void }) {
     return (
         <View style={styles.container}>
-            <Text style={{ color: 'white' }}>Welcome to the main app!</Text>
+            <LogoutScreen onLoggedOut={onLoggedOut} />
         </View>
     );
 }
@@ -37,7 +38,7 @@ export default function App() {
         return <LoginScreen onLoginSuccess={() => setIsLoggedIn(true)} />;
     }
 
-    return <MainApp />;
+    return <MainApp onLoggedOut={() => setIsLoggedIn(false)} />;
 }
 
 const styles = StyleSheet.create({
