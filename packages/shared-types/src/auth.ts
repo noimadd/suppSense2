@@ -28,3 +28,7 @@ export interface AccessTokenResponse {
 }
 
 // -------------------- logout ----------------
+export interface LogoutRequest {
+    userId: string;
+    sessionId: string;
+}
