@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS Products (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    barcode VARCHAR(30) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     ingredients JSONB, -- cannot directly verify existance with jsonb gotta figure out a way to link properly mhm
