@@ -3,6 +3,18 @@
 
 // ----------------------- sign-up -------------------
 
+export interface SignupRequest {
+    f_name: string,
+    l_name: string,
+    email: string,
+    u_name: string,
+    password: string,
+}
+
+export interface SignupResponse {
+    success: boolean;
+    message: string
+}
 
 // ------------------------ login ----------------------
 export interface LoginRequest {

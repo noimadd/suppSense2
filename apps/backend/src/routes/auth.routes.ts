@@ -94,7 +94,7 @@ router.post('/signup', async (req, res) => {
                 
                 if(!f_name || !l_name || !email || !u_name || !password)
                 {
-                    return res.status(400).json({ message: 'Email and password must be valid.' });
+                    return res.status(400).json({ success: false, message: 'Email and password must be valid.' });
                 }
                 
                 email = email.toLowerCase();
@@ -102,7 +102,7 @@ router.post('/signup', async (req, res) => {
                 const user = await getUserByEmail(email);
                 if(user)
                 {
-                    return res.status(401).json({ message: 'Email is already registered!' });
+                    return res.status(401).json({ success: false, message: 'Email is already registered!' });
                 }
                 
                 const password_salt = await bcrypt.genSalt(10);
@@ -110,12 +110,12 @@ router.post('/signup', async (req, res) => {
                 
                 if(!password_hash)
                 {
-                    return res.status(505).json({ message: 'Oops.' });
+                    return res.status(505).json({ success: false, message: 'Oops.' });
                 }
                 
                 await createUser(f_name, l_name, email, u_name, password_hash);
                 
-                res.json({ message: 'User created succesfully!'});
+                res.json({ success: true, message: 'User created succesfully!'});
                 
             });
 

@@ -15,6 +15,19 @@ export function login(credentials: LoginRequest): Promise<LoginResponse> {
 }
 
 /**
+ * handles user signup request
+ * @param user_info users email and password, first name etc
+ * @returns success/failure
+ */
+export function signup(user_info: SignupRequest): Promise<SignupResponse> {
+    return apiFetch<SignupResponse>('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user_info),
+    });
+}
+
+/**
  * handles user logout, sends userid and sessionid to backend for logout
  * @param session userid, and sessionid
  * @returns successful logout message

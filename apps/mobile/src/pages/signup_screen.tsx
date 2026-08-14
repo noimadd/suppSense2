@@ -13,9 +13,9 @@ import { login } from '@suppsense/api-client';
 import { decodeAccessToken } from '../auth/jwt_decoder';
 import { storeSession } from '../auth/session_storage';
 
-interface LoginScreenProps {
-    onLoginSuccess: () => void;
-    onSignup: () => void;
+interface SignupScreenProps {
+    onSignupFailure: () => void;
+    onSignupSuccess: () => void;
 }
 
 /**
@@ -23,16 +23,20 @@ interface LoginScreenProps {
  * @param param0 callback for successful login
  * @returns login page
  */
-export default function LoginScreen({ onLoginSuccess, onSignup }: LoginScreenProps) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+export default function SignupScreen({ onSignupFailure, onSignupSuccess }: SignupScreenProps) {
+    const [email, SetEmail] = useState('');
+    const [password, SetPassword] = useState('');
+    const [first_name, SetFirstName] = useState('');
+    const [last_name, SetLastName] = useState('');
+    const [user_name, SetUserName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const canSubmit = email.trim() !== '' && password.trim() !== '' && !loading;
+    const canSubmitSignup = email.trim() !== '' && password.trim() !== '' && first_name.trim() !== '' && last_name.trim() !== '' && user_name.trim() !== ''
+                        && !loading;
 
-    const handleLogin = async () => {
-        if (!canSubmit) return;
+    const handleSignup = async () => {
+        if (!canSubmitSignup) return;
 
         setError(null);
         setLoading(true);
