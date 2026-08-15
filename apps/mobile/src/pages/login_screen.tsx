@@ -62,8 +62,8 @@ export default function LoginScreen({ onLoginSuccess, onSignup }: LoginScreenPro
         }
     };
 
-    handleSignup = async () => {
-        setError(null))
+    const handleSignup = async () => {
+        onSignup();
     }
 
     return (
@@ -119,8 +119,7 @@ export default function LoginScreen({ onLoginSuccess, onSignup }: LoginScreenPro
 
             <TouchableOpacity
                 style={styles.button}
-                onPress={handleLogin}
-                disabled={!canSubmit}
+                onPress={handleSignup}
             >
                 {loading ? (
                     <ActivityIndicator color="#fff" />

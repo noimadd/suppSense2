@@ -9,12 +9,13 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
-import { login } from '@suppsense/api-client';
-import { decodeAccessToken } from '../auth/jwt_decoder';
-import { storeSession } from '../auth/session_storage';
+import Toast from 'react-native-toast-message'
+import { signup, email_verify_challenge } from '@suppsense/api-client';
+import EmailChallengeScreen from './email_challenge_screen';
 
-interface SignupScreenProps {
-    onSignupFailure: () => void;
+interface SignupScreenProps
+{
+    onSignupExit: () => void;
     onSignupSuccess: () => void;
 }
 
@@ -23,14 +24,20 @@ interface SignupScreenProps {
  * @param param0 callback for successful login
  * @returns login page
  */
-export default function SignupScreen({ onSignupFailure, onSignupSuccess }: SignupScreenProps) {
+enum SignupState {
+    REGISTER,
+    VERIFY
+}
+
+export default function SignupScreen({ onSignupExit, onSignupSuccess }: SignupScreenProps) {
+    const [signupState, setSignupState] = useState<SignupState>('REGISTER');
+    
     const [email, SetEmail] = useState('');
     const [password, SetPassword] = useState('');
     const [first_name, SetFirstName] = useState('');
     const [last_name, SetLastName] = useState('');
     const [user_name, SetUserName] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const canSubmitSignup = email.trim() !== '' && password.trim() !== '' && first_name.trim() !== '' && last_name.trim() !== '' && user_name.trim() !== ''
                         && !loading;
@@ -38,45 +45,90 @@ export default function SignupScreen({ onSignupFailure, onSignupSuccess }: Signu
     const handleSignup = async () => {
         if (!canSubmitSignup) return;
 
-        setError(null);
         setLoading(true);
 
-        try {
-            const { accessToken, refreshToken, sessionId } = await login({
-                email: email.trim().toLowerCase(),
-                password,
-            });
+        const res = await signup({ f_name: first_name, l_name: last_name, email: email, u_name: user_name, password: password });
+        console.log(res);
 
-            const payload = decodeAccessToken(accessToken);
-            if (!payload?.sub) { throw new Error('Error decoding access token'); }
-
-            await storeSession({
-                accessToken,
-                refreshToken,
-                sessionId,
-                userId: payload.sub,
-            });
-
-            onLoginSuccess();
-        } catch (err) {
-            console.error('Login error:', err);
-            setError('Invalid email or password. Please try again.');
-        } finally {
-            setLoading(false);
+        if(res === null)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while signing you up!', text2: 'Please try again later.'});      
         }
+        // Success! Now send an email challenge to the user's email
+        else if(res.success === true)
+        {
+            const challenge_res = await email_verify_challenge({email: email, password: password});
+            setLoading(false);
+            setSignupState('VERIFY');
+        }
+        // User email is already registered so move them over to the login screen and show a message
+        else if(res.status == 401)
+        {
+            Toast.show({type: 'info', text1: 'Your account is already registered!', text2: 'Log in to verify your email.'});
+            setLoading(false);
+            onSignupExit();
+        }
+        else
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while signing you up!', text2: 'Please try again later.'});
+        }
+
+        setLoading(false);
     };
 
-    handleSignup = async () => {
-        setError(null))
+    const handleExit = async () => {
+        setLoading(false);
+        onSignupExit();
     }
-
-    return (
+    
+    if(signupState === 'VERIFY')
+    {
+        return(<EmailChallengeScreen email={email} password={password} onChallengeComplete={() => onSignupSuccess() } onChallengeExit={() => setSignupState('REGISTER') } />);
+    }
+    
+    return(
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
             {/* main heading */}
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.title}>Signup</Text>
+            
+            {/* Firstname input */}
+            <TextInput
+                style={styles.input}
+                placeholder="First Name"
+                placeholderTextColor="#888"
+                value={first_name}
+                autoCapitalize="none"
+                onChangeText={SetFirstName}
+                keyboardType="default"
+                editable={!loading}
+            />
+            
+            {/* Lastname input */}
+            <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                placeholderTextColor="#888"
+                value={last_name}
+                autoCapitalize="none"
+                onChangeText={SetLastName}
+                keyboardType="default"
+                editable={!loading}
+            />
+            
+            {/* Username input */}
+            <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor="#888"
+                value={user_name}
+                autoCapitalize="none"
+                onChangeText={SetUserName}
+                keyboardType="default"
+                editable={!loading}
+            />
 
             {/* email input */}
             <TextInput
@@ -85,7 +137,7 @@ export default function SignupScreen({ onSignupFailure, onSignupSuccess }: Signu
                 placeholderTextColor="#888"
                 value={email}
                 autoCapitalize="none"
-                onChangeText={setEmail}
+                onChangeText={SetEmail}
                 keyboardType="email-address"
                 editable={!loading}
             />
@@ -98,33 +150,15 @@ export default function SignupScreen({ onSignupFailure, onSignupSuccess }: Signu
                 value={password}
                 autoCapitalize="none"
                 secureTextEntry
-                onChangeText={setPassword}
+                onChangeText={SetPassword}
                 editable={!loading}
             />
 
-            {/* error message */}
-            {error && <Text style={styles.error}>{error}</Text>}
-
-            {/* login button */}
+            {/* Submit button */}
             <TouchableOpacity
-                style={[styles.button, !canSubmit && styles.buttonDisabled]}
-                onPress={handleLogin}
-                disabled={!canSubmit}
-            >
-                {loading ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text style={styles.buttonText}>Log In</Text>
-                )}
-            </TouchableOpacity>
-            
-            {/* Signup heading  */}
-            <Text style={styles.subtitle}>or sign up if you dont already have an account!</Text>
-
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleLogin}
-                disabled={!canSubmit}
+                style={[styles.button, !canSubmitSignup && styles.buttonDisabled]}
+                onPress={handleSignup}
+                disabled={!canSubmitSignup}
             >
                 {loading ? (
                     <ActivityIndicator color="#fff" />
@@ -132,8 +166,14 @@ export default function SignupScreen({ onSignupFailure, onSignupSuccess }: Signu
                     <Text style={styles.buttonText}>Sign Up</Text>
                 )}
             </TouchableOpacity>
-
             
+            {/* Cancel button */}
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleExit}
+            >
+                <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
         </KeyboardAvoidingView>
     );
 }
@@ -177,6 +217,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
+        marginTop: 1,
     },
     buttonDisabled: {
         backgroundColor: '#555',

@@ -4,6 +4,7 @@ import { configureApiClient } from '@suppsense/api-client';
 
 import LoginScreen from './src/pages/login_screen';
 import LogoutScreen from './src/pages/logout_screen';
+import SignupScreen from './src/pages/signup_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
 
 configureApiClient(getAccessToken);
@@ -29,24 +30,16 @@ export default function App() {
     const [activeView, setActiveView] = useState<ActiveView>('LOGIN');
 
     useEffect(() => {
-        getSession().then((session) => { if(session !== null) { setActiveView('MAINAPP') }) });
+        getSession().then((session) => { if(session !== null) { setActiveView('MAINAPP') } });
     }, []);
-/*
-    if (isLoggedIn === null) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator color="#4d45dd" />
-            </View>
-        );
-    }
-*/
+
     if(activeView === 'LOGIN')
     {
-        return <LoginScreen onLoginSuccess={() => setActiveView('MAINAPP')} onSignup={() => setActiveView('SIGNUP')}} />;
+        return <LoginScreen onLoginSuccess={() => setActiveView('MAINAPP')} onSignup={() => setActiveView('SIGNUP')} />;
     }
     else if(activeView === 'SIGNUP')
     {
-        
+        return <SignupScreen onSignupSuccess={() => setActiveView('EMAIL_CHALLENGE')} onSignupExit={() => setActiveView('LOGIN')}/>;
     }
 
     return <MainApp onLoggedOut={() => setActiveView('LOGIN')} />;

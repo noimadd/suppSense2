@@ -4,16 +4,29 @@
 // ----------------------- sign-up -------------------
 
 export interface SignupRequest {
-    f_name: string,
-    l_name: string,
-    email: string,
-    u_name: string,
-    password: string,
+    f_name: string;
+    l_name: string;
+    email: string;
+    u_name: string;
+    password: string;
 }
 
 export interface SignupResponse {
     success: boolean;
-    message: string
+    message: string;
+}
+
+export interface EmailChallengeResponse {
+    message: string;
+}
+
+export interface CompleteChallengeRequest {
+    email: string;
+    code: string;
+}
+
+export interface CompleteChallengeResponse {
+    message: string;
 }
 
 // ------------------------ login ----------------------
