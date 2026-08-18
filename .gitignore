@@ -37,7 +37,13 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+build.bat
+run.bat
+project.4coder
 
 # misc
 coverage/
 .eslintcache
+
+# postgres 
+pgadmin/servers.json

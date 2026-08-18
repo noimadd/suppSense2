@@ -22,4 +22,4 @@ COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
 USER node
 EXPOSE 3000
-CMD ["node", "apps/backend/dist/index.js"]
+CMD ["node", "apps/backend/dist/server.js"]

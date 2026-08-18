@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "turbo": "^2.0.0"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.3"
   }
 }

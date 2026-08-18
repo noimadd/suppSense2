@@ -1,3 +1,2 @@
-export interface Supplement {
-    id: string;
-}
+export * from './auth';
+export * from './supplement';
