@@ -15,6 +15,7 @@ import { storeSession } from '../auth/session_storage';
 
 interface LoginScreenProps {
     onLoginSuccess: () => void;
+    onSignup: () => void;
 }
 
 /**
@@ -22,7 +23,7 @@ interface LoginScreenProps {
  * @param param0 callback for successful login
  * @returns login page
  */
-export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export default function LoginScreen({ onLoginSuccess, onSignup }: LoginScreenProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -61,13 +62,17 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         }
     };
 
+    const handleSignup = async () => {
+        onSignup();
+    }
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
             {/* main heading */}
-            <Text style={styles.title}>Login Screen</Text>
+            <Text style={styles.title}>Login</Text>
 
             {/* email input */}
             <TextInput
@@ -108,6 +113,22 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     <Text style={styles.buttonText}>Log In</Text>
                 )}
             </TouchableOpacity>
+            
+            {/* Signup heading  */}
+            <Text style={styles.subtitle}>or sign up if you dont already have an account!</Text>
+
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleSignup}
+            >
+                {loading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                )}
+            </TouchableOpacity>
+
+            
         </KeyboardAvoidingView>
     );
 }
@@ -127,6 +148,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#fff',
     },
+    subtitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 2,
+        marginBottom: 2,
+        color: '#fff',
+    },
     input: {
         width: '100%',
         height: 50,
@@ -140,7 +168,7 @@ const styles = StyleSheet.create({
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#007bff',
+        backgroundColor: '#0f62fe',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
