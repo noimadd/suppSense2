@@ -39,3 +39,17 @@ export function decodeAccessToken(token: string): AccessTokenResponse | null {
         return null;
     }
 }
+
+// Check to ensure that the given string is a valid http or https URL.
+export function isValidResourceURL(url: string): boolean
+{
+    try
+    {
+        const parsed_url = new URL(url);
+        return ['http:', 'https:'].includes(parsed_url.protocol);
+    }
+    catch (_)
+    {
+        return false;
+    }
+}
