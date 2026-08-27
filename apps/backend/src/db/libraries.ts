@@ -1,28 +1,5 @@
 import { pool } from './pool';
-
-/**
-* Contains some quick info about one of the products in a library
-*/
-export interface ProductEntry
-{
-	name: string,
-	image_url: string,
-	product_id: string,
-}
-
-/**
-* Contains all of the info about a given library in the DB
-*/
-export interface ProductLibrary
-{
-	id: string,
-	user_id: string,
-	library_name: string,
-	product_ids: ProductEntry[],
-	image_url: string,
-	date_added: string,
-	date_updated: string,
-}
+import { ProductEntry, ProductLibrary } from '@suppsense/shared-types'
 
 /**
 * Gets all libraries belonging to a given user
@@ -70,7 +47,21 @@ export async function deleteProductLibrary(user_id: string, library_id: string):
 export async function addProductToProductLibrary(user_id: string, library_id: string, product_id: string): Promise<void>
 {
 	const result = await pool.query<ProductLibrary>(
-	'UPDATE librarydata SET product_ids = product_ids || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
+	'UPDATE librarydata SET product_ids = COALESCE(product_ids, \'[]\'::jsonb) || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
+	[product_id, user_id, library_id]
+	);
+}
+
+/**
+* Remove a product from the given library
+* @param user_id the id of the user who owns the library - There to protect against unauthorized removal
+* @param library_id the id of the library to remove from 
+* @param product_id the id of the product we want to remove
+*/
+export async function removeProductFromProductLibrary(user_id: string, library_id: string, product_id: string): Promise<void>
+{
+	const result = await pool.query<ProductLibrary>(
+	'UPDATE librarydata SET product_ids = (SELECT jsonb_agg_strict(filt) FROM jsonb_array_elements(librarydata.product_ids) AS filt WHERE filt->>\'product_id\' != $1) WHERE librarydata.user_id = $2 AND librarydata.id = $3',
 	[product_id, user_id, library_id]
 	);
 }
