@@ -6,10 +6,22 @@ import { ProductEntry, ProductLibrary } from '@suppsense/shared-types'
 * @param user_id the id of the user to query for
 * @returns all libraries
 */
-export async function getProductLibrary(user_id: string): Promise<ProductLibrary[] | null>
+export async function getProductLibraries(user_id: string): Promise<ProductLibrary[] | null>
 {    
 	const result = await pool.query<ProductLibrary>('SELECT * FROM librarydata WHERE user_id = $1', [user_id]);
 	return result.rows ?? null;
+}
+
+/**
+* Gets a specific library belonging to a given user
+* @param user_id the id of the user to query for
+* @param library_id the id of the library to fetch
+* @returns the library with a matching id and user or null if it isnt found
+*/
+export async function getProductLibrary(user_id: string, library_id: string): Promise<ProductLibrary | null>
+{    
+	const result = await pool.query<ProductLibrary>('SELECT * FROM librarydata WHERE user_id = $1 AND id = $2', [user_id, library_id]);
+	return result.rows[0] ?? null;
 }
 
 /**

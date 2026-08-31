@@ -1,7 +1,7 @@
 import { Router } from 'express';
 //import { getUserLibrariesResponse } from '@suppsense/shared-types';
 import { decodeAccessToken, isValidResourceURL } from '../middleware/auth.middleware'
-import { getProductLibrary, createProductLibrary, deleteProductLibrary, addProductToProductLibrary, removeProductFromProductLibrary } from '../db/libraries'
+import { getProductLibraries, getProductLibrary, createProductLibrary, deleteProductLibrary, addProductToProductLibrary, removeProductFromProductLibrary } from '../db/libraries'
 
 const router = Router();
 
@@ -12,23 +12,48 @@ router.get('/', async (req, res) => {
     
     if(!token)
     {
-        console.log("Fake news token");
         return res.status(401).json({ message: 'Unauthorized' });
     }
     
     const token_decode = decodeAccessToken(token);
     if(!token_decode)
     {
-        console.log("Mclovin token");
         return res.status(401).json({ message: 'Unauthorized' });
     }
     
     // Collect all the user's libraries.
-    const query_res = await getProductLibrary(token_decode.sub);
+    const query_res = await getProductLibraries(token_decode.sub);
     
     if(!query_res)
     {
         return res.json([]);
+    }
+    
+    res.json(query_res);
+});
+
+// Get a specific library that a particular user owns
+router.get('/:library_id', async (req, res) => {
+    // We need to take the user's token and decode it to find their ID.
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if(!token)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const token_decode = decodeAccessToken(token);
+    if(!token_decode)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const library_id = req.params.library_id;
+    const query_res = await getProductLibrary(token_decode.sub, library_id);
+    
+    if(!query_res)
+    {
+        return res.json({});
     }
     
     res.json(query_res);

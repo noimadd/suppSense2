@@ -14,29 +14,16 @@ import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message'
 
 import { get_user_libraries } from '@suppsense/api-client';
+import { ProductLibrary } from '@suppsense/shared-types';
 import { StoredSession } from '../auth/auth';
 
 interface LibrariesProps
 {
     onExit: () => void;
+    onViewLibrary: (ProductLibrary) => void;
+    onViewProduct: (string) => void;
+    onAddProduct: (string) => void;
     session: StoredSession;
-}
-
-function RenderLibraryRow(props)
-{
-    return(
-        <View style={styles.row_container}>
-            <Text style={styles.row_title}>{props.item.name}</Text>
-        </View>
-    );
-}
-
-function LibraryRowHeader(props)
-{
-    return(
-        <TouchableOpacity style={styles.row_header} onPress={() => {console.log(props)}}>
-        </TouchableOpacity>
-    )
 }
 
 export default function LibrariesScreen(props: LibrariesProps)
@@ -60,6 +47,23 @@ export default function LibrariesScreen(props: LibrariesProps)
         
         setLoading(false);
     };
+    
+    const RenderLibraryRow = (row_props) =>
+    {
+        return(
+            <TouchableOpacity style={styles.row_container} onPress={() => { props.onViewProduct(row_props.item.product_id) }}>
+                <Text style={styles.product_title}>{row_props.item.name}</Text>
+            </TouchableOpacity>
+        );
+    };
+    
+    const LibraryRowHeader = (header_props) =>
+    {
+        return(
+            <TouchableOpacity style={styles.row_header} onPress={() => { props.onAddProduct(header_props) }}>
+            </TouchableOpacity>
+        );
+    };
 
     useEffect(() => {
         FetchUserLibraries();
@@ -81,9 +85,11 @@ export default function LibrariesScreen(props: LibrariesProps)
     for(let i = 0; i < libraries.length; i++)
     {
         rows.push(
-            <Text style={styles.row_title} key={libraries[i].id}>
-                {libraries[i].library_name}
-            </Text>
+            <TouchableOpacity style={styles.row_title} onPress={() => { props.onViewLibrary(libraries[i]) }}>
+                <Text style={styles.row_title} key={libraries[i].id}>
+                    {libraries[i].library_name}
+                </Text>
+            </TouchableOpacity>
             );
         rows.push(
             <FlatList
@@ -124,6 +130,8 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 18,
         backgroundColor: 'transparent',
+        marginBottom: 1,
+        marginTop: 1,
     },
     row_container: {
         height: 140,
@@ -131,6 +139,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#FF0000',
         borderRadius: 10,
         marginLeft: 10,
+    },
+    product_title: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        backgroundColor: 'transparent',
+        marginTop: 'auto',
+        marginBottom: 1,
     },
     page_title: {
         color: '#FFFFFF',
