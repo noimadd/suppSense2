@@ -18,7 +18,7 @@ export interface Product {
     name: string;
     description: string;
     ingredients: IngredientEntry[];
-    data_added: string;
+    date_added: string;
     date_updated: string;
 }
 
