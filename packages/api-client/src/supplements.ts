@@ -7,7 +7,7 @@ import { apiFetch } from "./http";
  * @returns all product information
  */
 export function getProductByBarcode(barcode: string): Promise<getProductResponse> {
-    return apiFetch<getProductResponse>('/api/supplements/${barcode}', {
+    return apiFetch<getProductResponse>(`/api/supplements/${barcode}`, {
         method: 'GET',
     });
 }
