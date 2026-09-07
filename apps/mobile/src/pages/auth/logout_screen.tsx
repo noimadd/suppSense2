@@ -6,7 +6,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 
-import { handleLogout } from '../auth/logout';
+import { handleLogout } from '../../auth/logout';
 
 interface LogoutButtonProps {
     onLoggedOut: () => void;

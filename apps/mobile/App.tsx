@@ -11,9 +11,9 @@ import TopBar from './src/pages/components/top_bar';
 import SideMenu from './src/pages/components/side_menu';
 
 // Auth
-import LoginScreen from './src/pages/login_screen';
-import LogoutScreen from './src/pages/logout_screen';
-import SignupScreen from './src/pages/signup_screen';
+import LoginScreen from './src/pages/auth/login_screen';
+import LogoutScreen from './src/pages/auth/logout_screen';
+import SignupScreen from './src/pages/auth/signup_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
 
 configureApiClient(getAccessToken);

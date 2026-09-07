@@ -10,8 +10,8 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { login } from '@suppsense/api-client';
-import { decodeAccessToken } from '../auth/jwt_decoder';
-import { storeSession } from '../auth/session_storage';
+import { decodeAccessToken } from '../../auth/jwt_decoder';
+import { storeSession } from '../../auth/session_storage';
 
 interface LoginScreenProps {
     onLoginSuccess: () => void;
