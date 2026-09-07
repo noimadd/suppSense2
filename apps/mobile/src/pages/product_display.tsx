@@ -5,11 +5,17 @@ import { getProductResponse } from '@suppsense/shared-types';
 interface IngredientsScreenProps {
     product: getProductResponse;
     onBack: () => void;
+    onIngredientPress: (ingredientName: string) => void;
 }
 
-export default function ProductDisplay({ product, onBack }: IngredientsScreenProps) {
+/**
+ * displays product name and image (to be added)
+ * alongside a list of all the ingredients within the product
+ */
+export default function ProductDisplay({ product, onBack, onIngredientPress }: IngredientsScreenProps) {
     return (
         <View style={styles.container}>
+            {/* return to barcode entry screen */}
             <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Text style={styles.backButtonText}>{'< Back'}</Text>
             </TouchableOpacity>
@@ -23,7 +29,7 @@ export default function ProductDisplay({ product, onBack }: IngredientsScreenPro
                     <TouchableOpacity 
                         key={`${item.name}-${idx}`} 
                         style={styles.ingredientRow} 
-                        onPress={() => {}}
+                        onPress={() => onIngredientPress(item.name)}
                     >
                         <Text style={styles.ingredientName}>{item.name}</Text>
                         {item.amount && <Text style={styles.ingredientAmount}>{item.amount}</Text>}

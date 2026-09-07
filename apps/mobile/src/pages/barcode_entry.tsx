@@ -14,6 +14,7 @@ import { getProductResponse } from '@suppsense/shared-types';
 
 
 import ProductDisplay from './product_display';
+import IngredientOverview from './ingredient_overview';
 
 /**
  * allows the user to enter in a barcode manually (camera scanning to be added later) 
@@ -25,6 +26,7 @@ export default function BarcodeEntryScreen() {
     const [product, setProduct] = useState<getProductResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [ingredient, setIngredient] = useState<string | null>(null);
 
     // only submit on containing data
     const canSubmit = barcode.trim() !== '' && !loading;
@@ -35,6 +37,7 @@ export default function BarcodeEntryScreen() {
 
         setError(null);
         setProduct(null);
+        setIngredient(null);
         setLoading(true);
 
         try {
@@ -51,8 +54,12 @@ export default function BarcodeEntryScreen() {
     // TODO: connect this with a barcode scanning and camera library
     const handleScanBarcode = () => {};
 
+    if (ingredient) {
+        return <IngredientOverview ingredientName={ingredient} onBack={() => setIngredient(null)} />;
+    }
+
     if (product) {
-        return <ProductDisplay product={product} onBack={() => setProduct(null)} />;
+        return <ProductDisplay product={product} onBack={() => setProduct(null)} onIngredientPress={setIngredient}/>;
     }
 
     // visual components consisting of 
