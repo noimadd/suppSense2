@@ -1,8 +1,11 @@
 import jwt from 'jsonwebtoken';
+import { jwtDecode } from 'jwt-decode';
+import type { AccessTokenResponse } from '@suppsense/shared-types';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-if (!JWT_SECRET) {
+if (!JWT_SECRET)
+{
     throw new Error('JWT_SECRET environment variable is not set');
 }
 
@@ -26,5 +29,27 @@ export function requireAuth(req: any, res: any, next: any) {
         next();
     } catch {
         res.status(401).json({ message: 'Invalid token' });
+    }
+}
+
+export function decodeAccessToken(token: string): AccessTokenResponse | null {
+    try {
+        return jwtDecode<AccessTokenResponse>(token);
+    } catch {
+        return null;
+    }
+}
+
+// Check to ensure that the given string is a valid http or https URL.
+export function isValidResourceURL(url: string): boolean
+{
+    try
+    {
+        const parsed_url = new URL(url);
+        return ['http:', 'https:'].includes(parsed_url.protocol);
+    }
+    catch (_)
+    {
+        return false;
     }
 }
