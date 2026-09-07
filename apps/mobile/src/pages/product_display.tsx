@@ -7,7 +7,7 @@ interface IngredientsScreenProps {
     onBack: () => void;
 }
 
-export default function IngredientsDisplay({ product, onBack }: IngredientsScreenProps) {
+export default function ProductDisplay({ product, onBack }: IngredientsScreenProps) {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={onBack}>

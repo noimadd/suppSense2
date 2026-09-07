@@ -3,6 +3,7 @@ import cors from 'cors';
 
 // routes
 import supplementsRouter from './routes/supplements.routes';
+import ingredientsRouter from './routes/ingredients.routes';
 import librariesRouter from './routes/libraries.routes'
 
 // authentication routes
@@ -19,7 +20,8 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/supplements', requireAuth, supplementsRouter);
-app.use('/api/libraries', requireAuth, librariesRouter)
+app.use('/api/ingredients', requireAuth, ingredientsRouter);
+app.use('/api/libraries', requireAuth, librariesRouter);
 
 const PORT = process.env.PORT || 3000;
 

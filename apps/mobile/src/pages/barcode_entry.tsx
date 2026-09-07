@@ -13,7 +13,7 @@ import { getProductByBarcode } from '@suppsense/api-client';
 import { getProductResponse } from '@suppsense/shared-types';
 
 
-import IngredientsDisplay from './ingredients_display';
+import ProductDisplay from './product_display';
 
 /**
  * allows the user to enter in a barcode manually (camera scanning to be added later) 
@@ -52,7 +52,7 @@ export default function BarcodeEntryScreen() {
     const handleScanBarcode = () => {};
 
     if (product) {
-        return <IngredientsDisplay product={product} onBack={() => setProduct(null)} />;
+        return <ProductDisplay product={product} onBack={() => setProduct(null)} />;
     }
 
     // visual components consisting of 
