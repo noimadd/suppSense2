@@ -12,7 +12,7 @@ import {
 import Toast from 'react-native-toast-message'
 
 import { signup, email_verify_challenge } from '@suppsense/api-client';
-import EmailChallengeScreen from '../email_challenge_screen';
+import EmailChallengeScreen from './email_challenge_screen';
 
 interface SignupScreenProps
 {

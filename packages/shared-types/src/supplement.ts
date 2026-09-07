@@ -19,6 +19,15 @@ export interface getProductResponse {
 
 
 
+// --------- product/ingredient link ---------
+export interface linkIngredientRequest {
+    productId: string;
+    ingredientId: string;
+    amount?: string;
+}
+
+
+
 // ----------- Ingredient -------- 
 export interface getIngredientResponse {
     id: string;

@@ -17,7 +17,6 @@ export interface Product {
     barcode: string;
     name: string;
     description: string;
-    ingredients: IngredientEntry[];
     date_added: string;
     date_updated: string;
 }
@@ -62,4 +61,30 @@ export async function getIngredient(name: string): Promise<Ingredient | null> {
         [name]
     );
     return result.rows[0] ?? null;
+}
+
+/**
+ * contains all information about the linked productingredient table - matches schema of the same table
+ */
+export interface ProductIngredient {
+    id: string;
+    product_id: string;
+    ingredient_id: string;
+    amount: string | null;
+}
+
+/**
+ * gets all ingredients linked to a product
+ * @param productId the id of the product
+ * @returns all linked ingredients and their quantities
+ */
+export async function getProductIngredients(productId: string): Promise<IngredientEntry[]> {
+    const result = await pool.query<IngredientEntry>(
+        `SELECT i.name, pi.amount
+            FROM productingredients pi
+            JOIN ingredients i ON i.id = pi.ingredient_id
+            WHERE pi.product_id = $1`,
+        [productId]
+    );
+    return result.rows;
 }

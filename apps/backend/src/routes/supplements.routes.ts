@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getProductResponse } from '@suppsense/shared-types';
-import { getProduct } from '../db/supplement';
+import { getProduct, getProductIngredients } from '../db/supplement';
 
 const router = Router();
 
@@ -20,12 +20,14 @@ router.get('/:barcode', async (req, res) => {
 
     if (!product) { return res.status(404).json({ message: 'Product not found' }); }
 
+    const ingredients = await getProductIngredients(product.id);
+
     const response: getProductResponse = {
         id: product.id,
         barcode: product.barcode,
         name: product.name,
         description: product.description,
-        ingredients: product.ingredients,
+        ingredients,
         data_added: product.date_added,
         date_updated: product.date_updated,
     };
