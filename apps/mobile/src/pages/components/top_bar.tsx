@@ -7,17 +7,27 @@ interface TopBarProps {
     onProfilePress: () => void;
 }
 
+/**
+ * displays a bar along the top of the screen contains 
+ * a burger menu icon on the left - opens the side menu
+ * a profile icon on the right - functionality to be added in future
+ * 
+ * @param onMenuPress - Called when the burger menu icon is pressed
+ * @param onProfilePress - Called when the profile icon is press
+ */
 export default function TopBar({ onMenuPress, onProfilePress }: TopBarProps) {
-    const insets = useSafeAreaInsets();
+    const insets = useSafeAreaInsets(); // places bar below status bar
 
     return (
         <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
+            {/* burger menu button */}
             <TouchableOpacity style={styles.burgerIcon} onPress={onMenuPress} hitSlop={10}>
                 <View style={styles.burgerBar} />
                 <View style={styles.burgerBar} />
                 <View style={styles.burgerBar} />
             </TouchableOpacity>
 
+            {/* profile button - blue circular placeholder for now to be updated to the users pfp */}
             <TouchableOpacity onPress={onProfilePress} hitSlop={10}>
                 <View style={styles.profileCircle} />
             </TouchableOpacity>

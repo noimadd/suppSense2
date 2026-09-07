@@ -15,14 +15,21 @@ import { getProductResponse } from '@suppsense/shared-types';
 
 import IngredientsDisplay from './ingredients_display';
 
+/**
+ * allows the user to enter in a barcode manually (camera scanning to be added later) 
+ * this transports them to the ingredients_display page 
+ * passes along product data return from api to this page
+ */
 export default function BarcodeEntryScreen() {
     const [barcode, setBarcode] = useState('');
     const [product, setProduct] = useState<getProductResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // only submit on containing data
     const canSubmit = barcode.trim() !== '' && !loading;
 
+    // looks up barcode via API and stores result
     const handleLookup = async () => {
         if (!canSubmit) return;
 
@@ -48,6 +55,10 @@ export default function BarcodeEntryScreen() {
         return <IngredientsDisplay product={product} onBack={() => setProduct(null)} />;
     }
 
+    // visual components consisting of 
+    // button for camera (not operational)
+    // text enter area for manual barcode entry
+    // enter button for the manual barcode entry
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -79,6 +90,7 @@ export default function BarcodeEntryScreen() {
                 onPress={handleLookup}
                 disabled={!canSubmit}
             >
+                {/* shows a spinner when loading */}
                 {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Look Up</Text>}
             </TouchableOpacity>
         </KeyboardAvoidingView>

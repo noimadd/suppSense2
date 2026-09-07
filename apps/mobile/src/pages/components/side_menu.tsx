@@ -2,16 +2,21 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const DRAWER_WIDTH = Dimensions.get('window').width * 0.7;
+const DRAWER_WIDTH = Dimensions.get('window').width * 0.7; // covers 70% of the screen from left -> right
 
 interface SideDrawerProps {
     visible: boolean;
     onClose: () => void;
 }
 
+/**
+ * slide in side menu opened via hamburger icon in top bar
+ * 
+ * slides in from the left when opened and slides back out from the right when closed
+ */
 export default function SideMenu({ visible, onClose }: SideDrawerProps) {
     const insets = useSafeAreaInsets();
-    const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+    const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current; // start off screen
 
     useEffect(() => {
         Animated.timing(translateX, {
@@ -24,7 +29,10 @@ export default function SideMenu({ visible, onClose }: SideDrawerProps) {
     if (!visible) {}
 
     return (
+        // 'none' when hidden to prevent blocking other touch events
+        // when open prevents the user from interacting with anything other than the side menu
         <View style={StyleSheet.absoluteFill} pointerEvents={visible ? 'auto' : 'none'}>
+            {/* touching outside of it closes it */}
             <TouchableOpacity
                 style={styles.backdrop}
                 activeOpacity={1}
