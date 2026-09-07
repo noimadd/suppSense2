@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS Products (
     barcode VARCHAR(30) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    ingredients JSONB, -- cannot directly verify existance with jsonb gotta figure out a way to link properly mhm
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -35,6 +34,15 @@ CREATE TABLE IF NOT EXISTS Ingredients (
     image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- links products and ingredients, the swap from JSONB so that ingredients can be linked and properly displayed
+CREATE TABLE IF NOT EXISTS ProductIngredients (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id uuid NOT NULL REFERENCES Products(id) ON DELETE CASCADE,
+    ingredient_id uuid NOT NULL REFERENCES Ingredients(id) ON DELETE CASCADE,
+    amount VARCHAR(50),
+    UNIQUE (product_id, ingredient_id)
 );
 
 CREATE TABLE IF NOT EXISTS LibraryData (
