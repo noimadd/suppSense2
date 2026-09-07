@@ -12,8 +12,9 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 
     if (!res.ok)
     {
-        const err = new Error(`Request to ${path} failed: ${res.status}`);
-        err.status = res.status;
+        const err = Object.assign(new Error(`Request to ${path} failed: ${res.status}`), {
+            status: res.status,
+        });
         throw err;
     }
     return res.json();
