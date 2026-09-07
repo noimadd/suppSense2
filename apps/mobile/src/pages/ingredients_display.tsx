@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getProductResponse } from '@suppsense/shared-types';
 
 interface IngredientsScreenProps {
@@ -18,16 +18,14 @@ export default function IngredientsDisplay({ product, onBack }: IngredientsScree
             <Text style={styles.productDescription}>{product.description}</Text>
 
             <Text style={styles.sectionTitle}>Ingredients</Text>
-            <FlatList
-                data={product.ingredients}
-                keyExtractor={(item, idx) => `${item.name}-${idx}`}
-                renderItem={({ item }) => (
-                    <View style={styles.ingredientRow}>
+            <View>
+                {product.ingredients.map((item, idx) => (
+                    <View key={`${item.name}-${idx}`} style={styles.ingredientRow}>
                         <Text style={styles.ingredientName}>{item.name}</Text>
                         {item.amount && <Text style={styles.ingredientAmount}>{item.amount}</Text>}
                     </View>
-                )}
-            />
+                ))}
+            </View>
         </View>
     );
 }
