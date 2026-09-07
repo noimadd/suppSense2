@@ -5,6 +5,7 @@ import { configureApiClient } from '@suppsense/api-client';
 import LoginScreen from './src/pages/login_screen';
 import LogoutScreen from './src/pages/logout_screen';
 import SignupScreen from './src/pages/signup_screen';
+import BarcodeEntryManual from './src/pages/barcode_entry_manual';
 import LibrariesScreen from './src/pages/libraries_screen';
 import LibraryScreen from './src/pages/library_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
@@ -24,6 +25,7 @@ enum ActiveView {
 function MainApp({ onLoggedOut }: { onLoggedOut: () => void }) {
     return (
         <View style={styles.container}>
+            <BarcodeEntryManual />
             <LogoutScreen onLoggedOut={onLoggedOut} />
         </View>
     );
