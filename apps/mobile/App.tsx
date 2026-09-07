@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Main Screens
 import BarcodeEntryScreen  from './src/pages/barcode_entry';
+import LibrariesScreen from './src/pages/libraries_screen';
 
 // Components
 import TopBar from './src/pages/components/top_bar';
@@ -12,9 +13,10 @@ import SideMenu from './src/pages/components/side_menu';
 
 // Auth
 import LoginScreen from './src/pages/auth/login_screen';
-import LogoutScreen from './src/pages/auth/logout_screen';
 import SignupScreen from './src/pages/auth/signup_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
+import { handleLogout } from './src/auth/logout';
+import { StoredSession } from './src/auth/auth';
 
 configureApiClient(getAccessToken);
 
@@ -24,20 +26,53 @@ enum ActiveView {
     MAINAPP = 'MAINAPP',
 }
 
+enum MainView {
+    BARCODE = 'BARCODE',
+    LIBRARIES = 'LIBRARIES',
+}
+
 // to be replaced later with the actual main application
-function MainApp({ onLoggedOut }: { onLoggedOut: () => void }) {
+function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut: () => void }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [activeView, setActiveView] = useState<MainView>(MainView.BARCODE);
+    const [loggingOut, setLoggingOut] = useState(false);
+
+    const menuItems = [
+        { label: 'Supplement Lookup', onPress: () => setActiveView(MainView.BARCODE) },
+        { label: 'Libraries', onPress: () => setActiveView(MainView.LIBRARIES) },
+        {
+            label: 'Log out',
+            onPress: async () => {
+                if (loggingOut) return;
+                setLoggingOut(true);
+                try {
+                    await handleLogout();
+                    onLoggedOut();
+                } finally {
+                    setLoggingOut(false);
+                }
+            },
+        }
+    ];
 
     return (
         <View style={styles.screen}>
             <TopBar onMenuPress={() => setDrawerOpen(true)} onProfilePress={() => {}} />
 
             <View style={styles.content}>
-                <BarcodeEntryScreen />
-                <LogoutScreen onLoggedOut={onLoggedOut} />
+                {activeView === MainView.BARCODE && <BarcodeEntryScreen />}
+                {activeView === MainView.LIBRARIES && (
+                    <LibrariesScreen
+                        session={session}
+                        onExit={() => setActiveView(MainView.BARCODE)}
+                        onViewLibrary={(library) => { /* TODO: wire up once library_screen  */ }}
+                        onViewProduct={(productId) => { /* TODO: wire up product_display navigation */ }}
+                        onAddProduct={(libraryId) => { /* TODO: wire up add-product */ }}
+                    />
+                )}
             </View>
 
-            <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
+            <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} items={menuItems} />
         </View>
     );
 }
@@ -53,9 +88,15 @@ export default function App() {
 
 function AppContent() {
     const [activeView, setActiveView] = useState<ActiveView>(ActiveView.LOGIN);
+    const [session, setSession] = useState<StoredSession | null>(null);
 
     useEffect(() => {
-        getSession().then((session) => { if(session !== null) { setActiveView(ActiveView.MAINAPP) } });
+        getSession().then((storedSession) => {
+            if (storedSession !== null) {
+                setSession(storedSession);
+                setActiveView(ActiveView.MAINAPP);
+            }
+        });
     }, []);
 
     if(activeView === ActiveView.LOGIN)
@@ -69,7 +110,11 @@ function AppContent() {
         return <SignupScreen onSignupSuccess={() => setActiveView(ActiveView.LOGIN)} onSignupExit={() => setActiveView(ActiveView.LOGIN)}/>;
     }
 
-    return <MainApp onLoggedOut={() => setActiveView(ActiveView.LOGIN)} />;
+    if (session === null) {
+        return <ActivityIndicator />;
+    }
+
+    return <MainApp session={session} onLoggedOut={() => setActiveView(ActiveView.LOGIN)} />;
 }
 
 const styles = StyleSheet.create({

@@ -4,9 +4,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.7; // covers 70% of the screen from left -> right
 
+interface SideMenuItem {
+    label: string;
+    onPress: () => void;
+}
+
 interface SideDrawerProps {
     visible: boolean;
     onClose: () => void;
+    items: SideMenuItem[];
 }
 
 /**
@@ -14,7 +20,7 @@ interface SideDrawerProps {
  * 
  * slides in from the left when opened and slides back out from the right when closed
  */
-export default function SideMenu({ visible, onClose }: SideDrawerProps) {
+export default function SideMenu({ visible, onClose, items }: SideDrawerProps) {
     const insets = useSafeAreaInsets();
     const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current; // start off screen
 
@@ -45,8 +51,19 @@ export default function SideMenu({ visible, onClose }: SideDrawerProps) {
                     { paddingTop: insets.top + 20, transform: [{ translateX }] },
                 ]}
             >
-                <Text style={styles.title}>Menu</Text>
-                {/* TODO: add nav items */}
+                <Text style={styles.title}>SuppSense</Text>
+                {items.map((item) => (
+                    <TouchableOpacity
+                        key={item.label}
+                        style={styles.menuItem}
+                        onPress={() => {
+                            onClose();
+                            item.onPress();
+                        }}
+                    >
+                        <Text style={styles.menuItemLabel}>{item.label}</Text>
+                    </TouchableOpacity>
+                ))}
             </Animated.View>
         </View>
     );
@@ -71,5 +88,12 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
+    },    
+    menuItem: {
+        paddingVertical: 14,
+    },
+    menuItemLabel: {
+        color: '#fff',
+        fontSize: 16,
     },
 });
