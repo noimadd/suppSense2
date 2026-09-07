@@ -20,10 +20,14 @@ export default function IngredientsDisplay({ product, onBack }: IngredientsScree
             <Text style={styles.sectionTitle}>Ingredients</Text>
             <View>
                 {product.ingredients.map((item, idx) => (
-                    <View key={`${item.name}-${idx}`} style={styles.ingredientRow}>
+                    <TouchableOpacity 
+                        key={`${item.name}-${idx}`} 
+                        style={styles.ingredientRow} 
+                        onPress={() => {}}
+                    >
                         <Text style={styles.ingredientName}>{item.name}</Text>
                         {item.amount && <Text style={styles.ingredientAmount}>{item.amount}</Text>}
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </View>
         </View>
@@ -65,16 +69,19 @@ const styles = StyleSheet.create({
     ingredientRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 6,
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 12,
         borderBottomColor: '#333',
         borderBottomWidth: 1,
     },
     ingredientName: {
         color: '#fff',
-        fontSize: 14,
+        fontSize: 16,
+        fontWeight: '600',
     },
     ingredientAmount: {
         color: '#aaa',
-        fontSize: 14,
+        fontSize: 15,
     },
 });
