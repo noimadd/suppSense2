@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { configureApiClient } from '@suppsense/api-client';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+// Main Screens
+import BarcodeEntryScreen  from './src/pages/barcode_entry';
+
+// Components
+import TopBar from './src/pages/components/top_bar';
+import SideMenu from './src/pages/components/side_menu';
+
+// Auth
 import LoginScreen from './src/pages/login_screen';
 import LogoutScreen from './src/pages/logout_screen';
 import SignupScreen from './src/pages/signup_screen';
-import BarcodeEntryScreen  from './src/pages/barcode_entry';
 import { getSession, getAccessToken } from './src/auth/session_storage';
 
 configureApiClient(getAccessToken);
@@ -18,17 +26,32 @@ enum ActiveView {
 
 // to be replaced later with the actual main application
 function MainApp({ onLoggedOut }: { onLoggedOut: () => void }) {
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
     return (
-        <View style={styles.container}>
-            <BarcodeEntryScreen />
-            <LogoutScreen onLoggedOut={onLoggedOut} />
+        <View style={styles.screen}>
+            <TopBar onMenuPress={() => setDrawerOpen(true)} onProfilePress={() => {}} />
+
+            <View style={styles.content}>
+                <BarcodeEntryScreen />
+                <LogoutScreen onLoggedOut={onLoggedOut} />
+            </View>
+
+            <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
         </View>
     );
 }
-
 // runs by default to check if the user is logged in
 // if they are logged in main app is rendered, if not login screen is rendered
 export default function App() {
+    return (
+        <SafeAreaProvider>
+            <AppContent />
+        </SafeAreaProvider>
+    );
+}
+
+function AppContent() {
     const [activeView, setActiveView] = useState<ActiveView>(ActiveView.LOGIN);
 
     useEffect(() => {
@@ -50,10 +73,13 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
+    flex: 1,
+    backgroundColor: '#0f0f12',
+  },
+  content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0f0f12',
   },
 });
