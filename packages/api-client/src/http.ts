@@ -32,7 +32,6 @@ export async function apiFetchWrapped<T>(path: string, options: RequestInit = {}
     try
     {
         const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-    
         if(!res.ok)
         {
             const decode_text = await res.text();
@@ -44,6 +43,7 @@ export async function apiFetchWrapped<T>(path: string, options: RequestInit = {}
     }
     catch(err)
     {
+        console.log(err);
         return null;
     }
 }

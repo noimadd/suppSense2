@@ -10,6 +10,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import Toast from 'react-native-toast-message'
+
 import { signup, email_verify_challenge } from '@suppsense/api-client';
 import EmailChallengeScreen from './email_challenge_screen';
 
@@ -48,7 +49,6 @@ export default function SignupScreen({ onSignupExit, onSignupSuccess }: SignupSc
         setLoading(true);
 
         const res = await signup({ f_name: first_name, l_name: last_name, email: email, u_name: user_name, password: password });
-        console.log(res);
 
         if(res === null)
         {

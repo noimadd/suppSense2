@@ -144,7 +144,7 @@ router.post('/email_challenge', async (req, res) => {
                     return res.status(401).json({ message: 'Invalid email or password.' });
                 }
                 
-                // Make a new challenge and email the code to the user
+                // Make a new challenge in the DB
                 const challenge = await CreateEmailVerificationChallenge(email);
                 
                 // Note(Leo): If challenge comes back NULL the user is being throttled
@@ -153,8 +153,7 @@ router.post('/email_challenge', async (req, res) => {
                     return res.status(401).json({ message: 'Too many requests to signup this email, wait a few minutes.' });
                 }
                 
-                // Create our user object in the meantime
-                
+                // Finally send the challenge email
                 await SendVerificationChallengeEmail(email, challenge.challenge_code);
                 
                 res.json({ message: 'Challenge has been started succesfully.'});

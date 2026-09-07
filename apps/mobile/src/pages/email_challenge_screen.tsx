@@ -61,7 +61,6 @@ export default function EmailChallengeScreen(props : EmailChallengeScreenProps) 
     }
 
     const handleSubmitCode = async () => {
-        console.log('Hello');
         if (!canSubmitCode) return;
 
         setLoading(true);

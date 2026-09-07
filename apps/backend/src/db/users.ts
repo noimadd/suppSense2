@@ -36,13 +36,13 @@ export async function updateLastLogin(userId: string): Promise<void> {
                      );
 }
 
-export async function createUser(f_name: string, l_name: string, email: string, u_name: string, password_hash: string): Promise<User>
+export async function createUser(f_name: string, l_name: string, email: string, u_name: string, password_hash: string): Promise<void>
 {
     const created = await pool.query<User>(
                                            'INSERT INTO users (first_name, last_name, email, username, password_hash, user_type, email_verified, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)',
                                            [f_name, l_name, email.toLowerCase(), u_name, password_hash, 'user', false]
                                            );
-    return created.rows[0] ?? null;
+    await created;
 }
 
 export async function verifyUser(email: string): Promise<void>
