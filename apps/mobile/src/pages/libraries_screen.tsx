@@ -20,8 +20,6 @@ import { StoredSession } from '../auth/auth';
 interface LibrariesProps
 {
     onExit: () => void;
-    onViewLibrary: (ProductLibrary) => void;
-    onViewProduct: (string) => void;
     onAddProduct: (string) => void;
     session: StoredSession;
 }
@@ -30,6 +28,8 @@ export default function LibrariesScreen(props: LibrariesProps)
 {
     const [loading, setLoading] = useState(true);
     const [libraries, setLibraries] = useState([]);
+    const [activeLibrary, setActiveLibrary] = useState<ProductLibrary | null>(null);
+    const [activeProduct, setActiveProduct] = useState<getProductResponse | null>(null);
 
     const FetchUserLibraries = async () =>
     {
@@ -46,6 +46,21 @@ export default function LibrariesScreen(props: LibrariesProps)
         }
         
         setLoading(false);
+    };
+
+    const FetchActiveProduct = async (lib_id: string) =>
+    {
+        const res = await getProductById(props.session.accessToken, lib_id);
+    
+        if(res === null || res.success !== true)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while fetching your product!', text2: 'Please try again later.'});
+        }
+        else
+        {
+            setActiveProduct(res.result);
+        }
+        
     };
     
     const RenderLibraryRow = (row_props) =>
@@ -72,6 +87,22 @@ export default function LibrariesScreen(props: LibrariesProps)
     if(loading)
     {
         return <ActivityIndicator color="#fff" />;
+    }
+
+    if(activeProduct)
+    {
+        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)} onIngredientPress={() => {}}/>;
+    }
+
+    if(activeLibrary)
+    {
+        <LibraryScreen 
+            session={session}
+            onExit={() => setActiveLibrary(null)}
+            onViewProduct={(product_id) => { FetchActiveProduct(product_id) }}
+            onAddProduct={props.onAddProduct}
+            libraryData={activeLibrary}
+        />
     }
 
     const rows = [];

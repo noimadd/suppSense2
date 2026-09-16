@@ -29,7 +29,6 @@ enum ActiveView {
 enum MainView {
     BARCODE = 'BARCODE',
     LIBRARIES = 'LIBRARIES',
-    LIBRARY = 'LIBRARY',
 }
 
 // to be replaced later with the actual main application
@@ -37,7 +36,6 @@ function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [activeView, setActiveView] = useState<MainView>(MainView.BARCODE);
     const [loggingOut, setLoggingOut] = useState(false);
-    const [activeLibrary, setActiveLibrary] = useState<ProductLibrary?>(null);
 
     const menuItems = [
         { label: 'Supplement Lookup', onPress: () => setActiveView(MainView.BARCODE) },
@@ -67,17 +65,10 @@ function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut
                     <LibrariesScreen
                         session={session}
                         onExit={() => setActiveView(MainView.BARCODE)}
-                        onViewLibrary={(library) => { setActiveView(MainView.LIBRARY); setActiveLibrary(library); }}
-                        onViewProduct={(productId) => {  }}
-                        onAddProduct={(libraryId) => { /* TODO: wire up add-product */ }}
+                        onAddProduct={(libraryId) => {  }}
                     />
                 )}
-                {activeView === MainView.LIBRARY && (
-                    <LibraryScreen 
-                        session={session}
-                        onExit={() => setActiveView(MainView.LIBRARIES)}
-                    />
-                )}
+
             </View>
 
             <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} items={menuItems} />

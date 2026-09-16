@@ -11,3 +11,15 @@ export function getProductByBarcode(barcode: string): Promise<getProductResponse
         method: 'GET',
     });
 }
+
+export function getProductById(user_token: string, id: string) : Promise<APIResponseWrap<getProductResponse>>
+{
+ return apiFetchWrapped<getProductResponse>('/api/supplements/by_id/' + id, {
+   method: 'GET',
+   headers: {
+    'Authorization': 'Bearer ' + user_token,
+    'Content-Type': 'application/json'
+   },
+  }
+ );
+}

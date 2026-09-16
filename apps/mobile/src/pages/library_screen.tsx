@@ -15,7 +15,7 @@ import Toast from 'react-native-toast-message'
 
 import { StoredSession } from '../auth/auth';
 import { ProductLibrary } from '@suppsense/shared-types';
-import { get_user_library } from '@suppsense/api-client';
+import { get_user_library, getProductById } from '@suppsense/api-client';
 
 interface LibraryProps
 {
