@@ -1,5 +1,5 @@
 import { getProductResponse } from "@suppsense/shared-types";
-import { apiFetch } from "./http";
+import { apiFetch, apiFetchWrapped } from "./http";
 
 /**
  * looks up a product via it's barcode

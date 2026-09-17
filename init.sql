@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS Products (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     barcode VARCHAR(30) NOT NULL,
     name VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255),
     description TEXT,
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS LibraryData (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid REFERENCES users(id) ON DELETE CASCADE,
     library_name VARCHAR(255) NOT NULL,
-    product_ids JSONB, -- cannot directly verify existance with jsonb gotta figure out a way to link properly mhm
+    product_ids JSONB,
     image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP

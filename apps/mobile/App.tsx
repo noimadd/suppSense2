@@ -96,7 +96,7 @@ function AppContent() {
                 setActiveView(ActiveView.MAINAPP);
             }
         });
-    }, []);
+    }, [activeView]);
 
     if(activeView === ActiveView.LOGIN)
     {

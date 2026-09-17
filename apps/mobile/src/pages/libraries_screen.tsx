@@ -6,16 +6,20 @@ import {
     View,
     StyleSheet,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    Image
 } from 'react-native';
 
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message'
 
-import { get_user_libraries } from '@suppsense/api-client';
+import { get_user_libraries, getProductById } from '@suppsense/api-client';
 import { ProductLibrary } from '@suppsense/shared-types';
 import { StoredSession } from '../auth/auth';
+import LibraryScreen from './library_screen';
+import ProductDisplay from './product_display'
+import IngredientOverview from './ingredient_overview'
 
 interface LibrariesProps
 {
@@ -30,6 +34,7 @@ export default function LibrariesScreen(props: LibrariesProps)
     const [libraries, setLibraries] = useState([]);
     const [activeLibrary, setActiveLibrary] = useState<ProductLibrary | null>(null);
     const [activeProduct, setActiveProduct] = useState<getProductResponse | null>(null);
+    const [activeIngredientId, setActiveIngredientId] = useState<string | null>(null);
 
     const FetchUserLibraries = async () =>
     {
@@ -66,7 +71,8 @@ export default function LibrariesScreen(props: LibrariesProps)
     const RenderLibraryRow = (row_props) =>
     {
         return(
-            <TouchableOpacity style={styles.row_container} onPress={() => { props.onViewProduct(row_props.item.product_id) }}>
+            <TouchableOpacity style={styles.row_container} onPress={() => { FetchActiveProduct(row_props.item.product_id) }}>
+                <Image source={{ uri: row_props.item.image_url }} style={styles.product_thumbnail}/>
                 <Text style={styles.product_title}>{row_props.item.name}</Text>
             </TouchableOpacity>
         );
@@ -88,21 +94,28 @@ export default function LibrariesScreen(props: LibrariesProps)
     {
         return <ActivityIndicator color="#fff" />;
     }
+    
+    if(activeIngredientId)
+    {
+        return <IngredientOverview ingredientName={activeIngredientId} onBack={() => setActiveIngredientId(null)} />;
+    }
 
     if(activeProduct)
     {
-        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)} onIngredientPress={() => {}}/>;
+        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)} onIngredientPress={(id: string) => { setActiveIngredientId(id) }}/>;
     }
 
     if(activeLibrary)
     {
-        <LibraryScreen 
-            session={session}
-            onExit={() => setActiveLibrary(null)}
-            onViewProduct={(product_id) => { FetchActiveProduct(product_id) }}
-            onAddProduct={props.onAddProduct}
-            libraryData={activeLibrary}
-        />
+        return(
+            <LibraryScreen 
+                session={props.session}
+                onExit={() => setActiveLibrary(null)}
+                onViewProduct={(product_id) => { FetchActiveProduct(product_id) }}
+                onAddProduct={props.onAddProduct}
+                libraryData={activeLibrary}
+            />
+        );
     }
 
     const rows = [];
@@ -116,8 +129,8 @@ export default function LibrariesScreen(props: LibrariesProps)
     for(let i = 0; i < libraries.length; i++)
     {
         rows.push(
-            <TouchableOpacity style={styles.row_title} onPress={() => { props.onViewLibrary(libraries[i]) }}>
-                <Text style={styles.row_title} key={libraries[i].id}>
+            <TouchableOpacity style={styles.row_title} onPress={() => { setActiveLibrary(libraries[i]) }}  key={libraries[i].id + 'name'}>
+                <Text style={styles.row_title}>
                     {libraries[i].library_name}
                 </Text>
             </TouchableOpacity>
@@ -127,7 +140,7 @@ export default function LibrariesScreen(props: LibrariesProps)
                 key={libraries[i].id}
                 data={libraries[i].product_ids}
                 renderItem={RenderLibraryRow}
-                keyExtractor={item => item.product_id}
+                keyExtractor={item => item.product_id + libraries[i].id}
                 horizontal={true}
                 ListHeaderComponent={() => { return LibraryRowHeader(libraries[i].id) }}
             />
@@ -167,9 +180,10 @@ const styles = StyleSheet.create({
     row_container: {
         height: 140,
         width: 140,
-        backgroundColor: '#FF0000',
+        backgroundColor: '#606060',
         borderRadius: 10,
         marginLeft: 10,
+        overflow: 'hidden',
     },
     product_title: {
         color: '#FFFFFF',
@@ -188,5 +202,9 @@ const styles = StyleSheet.create({
         width: 50,
         backgroundColor: '#0000FF',
         borderRadius: 10,
+    },
+    product_thumbnail: {
+        height: '100%',
+        width: '100%',
     },
 })

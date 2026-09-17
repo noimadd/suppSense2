@@ -34,6 +34,14 @@ export async function getProduct(barcode: string): Promise<Product | null> {
     return result.rows[0] ?? null;
 }
 
+export async function getProductByID(p_id: string): Promise<Product | null> {
+    const result = await pool.query<Product>(
+        'SELECT * FROM products WHERE id = $1',
+        [p_id]
+    );
+    return result.rows[0] ?? null;
+}
+
 /**
  * contains all ingredient info - matches the db ingredient schema
  */

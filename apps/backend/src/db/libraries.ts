@@ -59,7 +59,7 @@ export async function deleteProductLibrary(user_id: string, library_id: string):
 export async function addProductToProductLibrary(user_id: string, library_id: string, product_id: string): Promise<void>
 {
 	const result = await pool.query<ProductLibrary>(
-	'UPDATE librarydata SET product_ids = COALESCE(product_ids, \'[]\'::jsonb) || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
+	'UPDATE librarydata SET product_ids = COALESCE(product_ids, \'[]\'::jsonb) || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name, products.image_url AS image_url FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
 	[product_id, user_id, library_id]
 	);
 }
