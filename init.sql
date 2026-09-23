@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS LibraryData (
     user_id uuid REFERENCES users(id) ON DELETE CASCADE,
     library_name VARCHAR(255) NOT NULL,
     product_ids JSONB,
-    image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

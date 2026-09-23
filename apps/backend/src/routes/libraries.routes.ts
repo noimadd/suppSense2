@@ -75,20 +75,20 @@ router.post('/create', async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     
-    const { library_name, img_url } = req.body ?? {};
+    const { library_name } = req.body ?? {};
     
-    if(!library_name || !img_url)
+    if(!library_name)
     {
-        return res.status(401).json({ message: 'Invalid library name/image url' });
+        return res.status(401).json({ message: 'Invalid library name!' });
     }
     
-    if(!isValidResourceURL(img_url))
-    {
-        return res.status(401).json({ message: 'Invalid image url' });
-    }
+    //if(!isValidResourceURL(img_url))
+    //{
+    //    return res.status(401).json({ message: 'Invalid image url' });
+    //}
     
     // Create the library entry in the DB.
-    await createProductLibrary(token_decode.sub, library_name, img_url);
+    await createProductLibrary(token_decode.sub, library_name);
     
     return res.json({message: 'Success'});
 });

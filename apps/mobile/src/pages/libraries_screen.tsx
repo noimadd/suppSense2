@@ -160,7 +160,9 @@ export default function LibrariesScreen(props: LibrariesProps)
     return(
         <SafeAreaProvider>
             <SafeAreaView style={styles.outer_div}>
-                <ModalCreateLibrary isVisible={creatingLibrary} session={props.session} onCancel={() => setCreatingLibrary(false)} onComplete={() => setCreatingLibrary(false)}/>
+                <ModalCreateLibrary isVisible={creatingLibrary} session={props.session}
+                    onCancel={() => setCreatingLibrary(false)}
+                    onComplete={() => { setCreatingLibrary(false); FetchUserLibraries(); }}/>
                 
                 <ScrollView style={styles.outer_div}>
                     {

@@ -29,3 +29,17 @@ export function get_user_library(user_token: string, library_id: string): Promis
   }
  );
 }
+
+export function create_user_library(user_token: string, library_name: string): Promise<APIResponseWrap<any>>
+{
+    const body = {'library_name': library_name};
+    return apiFetchWrapped<any>('/api/libraries/create', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + user_token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+     }
+    );
+}

@@ -12,7 +12,11 @@ import {
     Modal,
 } from 'react-native';
 
+import Toast from 'react-native-toast-message'
+
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+
+import { create_user_library } from '@suppsense/api-client';
 
 interface CreateLibraryProps
 {
@@ -24,7 +28,6 @@ interface CreateLibraryProps
 
 export default function ModalCreateLibrary(props: CreateLibraryProps)
 {
-    console.log(props);
     const [library_name, set_library_name] = useState("");
     const [loading, set_loading] = useState(false);
     const canSubmit = library_name.trim() !== '';
@@ -33,7 +36,7 @@ export default function ModalCreateLibrary(props: CreateLibraryProps)
     {
         set_loading(true);
     
-        // We have finished to return back to the parent
+        // We have finished so return back to the parent
         set_library_name("");
         props.onCancel();
         
@@ -44,17 +47,25 @@ export default function ModalCreateLibrary(props: CreateLibraryProps)
     {
         set_loading(true);
         
-        // We have finished to return back to the parent
+        // Make the request to create our library. 
+        const res = await create_user_library(props.session.accessToken, library_name);
+        
+        if(res === null || res.success !== true)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while creating your library!', text2: 'Please try again later.'});
+        }
+        // Success, show our new libraries
+        else
+        {
+            Toast.show({type: 'info', text1: 'Library Created'});
+        }
+        
+        // We have finished so return back to the parent
         set_library_name("");
-        props.onComplete("");
+        props.onComplete();
     
         set_loading(false);
     };
-
-    if(props.isVisible)
-    {
-        console.log("Jello");
-    }
 
     return(
     <Modal

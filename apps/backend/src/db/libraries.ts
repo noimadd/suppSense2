@@ -31,10 +31,10 @@ export async function getProductLibrary(user_id: string, library_id: string): Pr
 * @param img_url An http/https url to an image resource which will be shown as the thumbnail for this library 
 * @returns all libraries
 */
-export async function createProductLibrary(user_id: string, library_name: string, img_url: string): Promise<void>
+export async function createProductLibrary(user_id: string, library_name: string): Promise<void>
 {
-	const result = await pool.query<ProductLibrary>('INSERT INTO librarydata (user_id, library_name, product_ids, image_url, date_added) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)',
-													[user_id, library_name, JSON.stringify([]), img_url]
+	const result = await pool.query<ProductLibrary>('INSERT INTO librarydata (user_id, library_name, product_ids, date_added) VALUES($1, $2, $3, CURRENT_TIMESTAMP)',
+													[user_id, library_name, JSON.stringify([])]
 													);
 }
 
