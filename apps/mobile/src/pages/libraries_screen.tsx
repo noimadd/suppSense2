@@ -20,6 +20,7 @@ import { StoredSession } from '../auth/auth';
 import LibraryScreen from './library_screen';
 import ProductDisplay from './product_display'
 import IngredientOverview from './ingredient_overview'
+import ModalCreateLibrary from './components/modal_create_library'
 
 interface LibrariesProps
 {
@@ -35,6 +36,8 @@ export default function LibrariesScreen(props: LibrariesProps)
     const [activeLibrary, setActiveLibrary] = useState<ProductLibrary | null>(null);
     const [activeProduct, setActiveProduct] = useState<getProductResponse | null>(null);
     const [activeIngredientId, setActiveIngredientId] = useState<string | null>(null);
+
+    const [creatingLibrary, setCreatingLibrary] = useState(false);
 
     const FetchUserLibraries = async () =>
     {
@@ -94,7 +97,7 @@ export default function LibrariesScreen(props: LibrariesProps)
     {
         return <ActivityIndicator color="#fff" />;
     }
-    
+
     if(activeIngredientId)
     {
         return <IngredientOverview ingredientName={activeIngredientId} onBack={() => setActiveIngredientId(null)} />;
@@ -121,9 +124,16 @@ export default function LibrariesScreen(props: LibrariesProps)
     const rows = [];
 
     rows.push(
-        <Text style={styles.page_title} key={'PageTitle'}>
-            {'Libraries'}
-        </Text>
+        <View key={'PageTitle'} style={styles.page_header}>
+            <Text style={styles.page_title} >
+                {'Libraries'}
+            </Text>
+            <TouchableOpacity style={styles.add_library_button} onPress={() => { setCreatingLibrary(true) }}>
+                <Text style={styles.page_title}>
+                {"+"}
+                </Text>
+            </TouchableOpacity>
+        </View>
     );
     
     for(let i = 0; i < libraries.length; i++)
@@ -150,11 +160,14 @@ export default function LibrariesScreen(props: LibrariesProps)
     return(
         <SafeAreaProvider>
             <SafeAreaView style={styles.outer_div}>
+                <ModalCreateLibrary isVisible={creatingLibrary} session={props.session} onCancel={() => setCreatingLibrary(false)} onComplete={() => setCreatingLibrary(false)}/>
+                
                 <ScrollView style={styles.outer_div}>
                     {
                         rows
                     }
                 </ScrollView>
+                
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -196,6 +209,25 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 30,
         backgroundColor: 'transparent'
+    },
+    page_header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    add_library_button:
+    {
+        color: '#FFFFFF',
+        fontSize: 30,
+        backgroundColor: 'transparent',
+        marginLeft: 10,
+        borderRadius: 10,
+        backgroundColor: '#0000FF',
+        height: 30,
+        width: 30,
+        padding: 'auto',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     row_header: {
         height: 140,
