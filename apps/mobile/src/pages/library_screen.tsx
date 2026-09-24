@@ -6,10 +6,11 @@ import {
     View,
     StyleSheet,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    Image
 } from 'react-native';
 
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {useSafeAreaInsets, SafeAreaProvider} from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message'
 
@@ -51,15 +52,6 @@ export default function LibraryScreen(props: LibraryProps)
         
         setLoading(false);
     };
-    
-    const RenderProductRow = (row_props) =>
-    {
-        return(
-            <TouchableOpacity style={styles.row_container} onPress={() => { props.onViewProduct(row_props.item.product_id) }}>
-                <Text style={styles.product_title}>{row_props.item.name}</Text>
-            </TouchableOpacity>
-        );
-    };
 
     // We werent given any data so we need to fetch it ourselves
     if(!props.libraryData)
@@ -69,6 +61,8 @@ export default function LibraryScreen(props: LibraryProps)
         }, [props.session]);
     }
     
+    const insets = useSafeAreaInsets();
+    
     if(loading)
     {
         return <ActivityIndicator color="#fff" />;
@@ -77,8 +71,14 @@ export default function LibraryScreen(props: LibraryProps)
     const rows = [];
 
     rows.push(
-        <View style={styles.page_header}>
-            <Text style={styles.page_title} key={'PageTitle'}>
+        <TouchableOpacity style={styles.backButton} onPress={props.onExit} key={'BackButton'}>
+                <Text style={styles.backButtonText}>{'< Back'}</Text>
+        </TouchableOpacity>
+    );
+
+    rows.push(
+        <View style={styles.page_header} key={'PageTitle'}>
+            <Text style={styles.page_title}>
                 { library.library_name }
             </Text>
             <TouchableOpacity style={styles.add_product_button} onPress={() => { props.onAddProduct(library.id) }}>
@@ -92,30 +92,41 @@ export default function LibraryScreen(props: LibraryProps)
     for(let i = 0; i < library.product_ids.length; i++)
     {
         rows.push(
-            <View style={styles.row_container}>
-                <Text style={styles.row_title} key={library.product_ids[i].id}>
+            <TouchableOpacity style={styles.row_container}
+                key={library.product_ids[i].product_id}
+                onPress={() => { props.onViewProduct(library.product_ids[i].product_id) }}
+            >
+                <Image source={{ uri: library.product_ids[i].image_url }} style={styles.product_thumbnail}/>
+                <Text style={styles.row_title}>
                     { library.product_ids[i].name }
                 </Text>
-            </View>
+            </TouchableOpacity>
         );
     }
 
     return(
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.outer_div}>
-                <ScrollView style={styles.outer_div}>
-                    {
-                        rows
-                    }
-                </ScrollView>
-            </SafeAreaView>
+        <SafeAreaProvider style={[styles.outer_div, { paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
+            <ScrollView>
+                {
+                    rows
+                }
+            </ScrollView>
         </SafeAreaProvider>
     );
 }
 
 const styles = StyleSheet.create({
+    backButtonText: {
+        color: '#0f62fe',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        marginRight: 10,
+    },
     outer_div: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         backgroundColor: '#0f0f12',
     },
     text: {
@@ -131,13 +142,18 @@ const styles = StyleSheet.create({
         marginTop: 1,
     },
     row_container: {
-        height: 70,
+        height: 130,
         width: '90%',
-        backgroundColor: '#FF0000',
+        backgroundColor: '#606060',
         borderRadius: 10,
         marginLeft: '5%',
         marginRight: '5%',
         marginBottom: 1,
+        flexDirection: 'row',
+    },
+    product_thumbnail: {
+        height: 130,
+        width: 130,
     },
     product_title: {
         color: '#FFFFFF',

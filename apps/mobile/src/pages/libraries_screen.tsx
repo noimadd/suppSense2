@@ -10,7 +10,7 @@ import {
     Image
 } from 'react-native';
 
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message'
 
@@ -93,6 +93,8 @@ export default function LibrariesScreen(props: LibrariesProps)
         FetchUserLibraries();
     }, [props.session]);
 
+    const insets = useSafeAreaInsets();
+
     if(loading)
     {
         return <ActivityIndicator color="#fff" />;
@@ -124,6 +126,12 @@ export default function LibrariesScreen(props: LibrariesProps)
     const rows = [];
 
     rows.push(
+        <TouchableOpacity style={styles.backButton} onPress={props.onExit} key={'BackButton'}>
+                <Text style={styles.backButtonText}>{'< Back'}</Text>
+        </TouchableOpacity>
+    );
+
+    rows.push(
         <View key={'PageTitle'} style={styles.page_header}>
             <Text style={styles.page_title} >
                 {'Libraries'}
@@ -144,7 +152,8 @@ export default function LibrariesScreen(props: LibrariesProps)
                     {libraries[i].library_name}
                 </Text>
             </TouchableOpacity>
-            );
+        );
+        
         rows.push(
             <FlatList
                 key={libraries[i].id}
@@ -158,32 +167,39 @@ export default function LibrariesScreen(props: LibrariesProps)
     }
 
     return(
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.outer_div}>
-                <ModalCreateLibrary isVisible={creatingLibrary} session={props.session}
-                    onCancel={() => setCreatingLibrary(false)}
-                    onComplete={() => { setCreatingLibrary(false); FetchUserLibraries(); }}/>
-                
-                <ScrollView style={styles.outer_div}>
-                    {
-                        rows
-                    }
-                </ScrollView>
-                
-            </SafeAreaView>
+        <SafeAreaProvider style={[styles.outer_div, { paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
+            <ModalCreateLibrary isVisible={creatingLibrary} session={props.session}
+                onCancel={() => setCreatingLibrary(false)}
+                onComplete={() => { setCreatingLibrary(false); FetchUserLibraries(); } }
+            />
+            
+            <ScrollView>
+                {
+                    rows
+                }
+            </ScrollView>
         </SafeAreaProvider>
     );
 }
 
 const styles = StyleSheet.create({
     outer_div: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         backgroundColor: '#0f0f12',
     },
     text: {
         color: '#000',
         fontSize: 15,
         fontWeight: '600'
+    },
+    backButtonText: {
+        color: '#0f62fe',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        marginRight: 10,
     },
     row_title: {
         color: '#FFFFFF',
@@ -215,6 +231,8 @@ const styles = StyleSheet.create({
     page_header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
     },
     add_library_button:
     {
