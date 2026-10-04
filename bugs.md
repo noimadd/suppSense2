@@ -4,3 +4,4 @@
 - logging out doesn't revoke access token which will continue to be valid until 1hr expiry
 - /login does not have any rate limiting
 - password minimum strength requirements
+- user is not kicked back to the login screen after their access token expires
