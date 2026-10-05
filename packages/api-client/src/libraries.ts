@@ -1,12 +1,12 @@
 import { ProductLibrary, ProductEntry } from '@suppsense/shared-types';
-import { apiFetchWrapped } from './http';
+import { apiFetchWrapped, APIResponseWrap } from './http';
 
 /**
  * Gets the list of product libraries belonging to the user
  * @param user_token user's auth token
  * @returns success/failure
  */
-export function get_user_libraries(user_token: string): Promise<APIResponseWrap<Array<ProductLibrary>>>
+export function get_user_libraries(user_token: string): Promise<APIResponseWrap<Array<ProductLibrary>> | null>
 {
  return apiFetchWrapped<Array<ProductLibrary>>('/api/libraries', {
    method: 'GET',
@@ -18,7 +18,7 @@ export function get_user_libraries(user_token: string): Promise<APIResponseWrap<
  );
 }
 
-export function get_user_library(user_token: string, library_id: string): Promise<APIResponseWrap<ProductLibrary>>
+export function get_user_library(user_token: string, library_id: string): Promise<APIResponseWrap<ProductLibrary> | null>
 {
  return apiFetchWrapped<ProductLibrary>('/api/libraries/' + library_id, {
    method: 'GET',
@@ -28,18 +28,4 @@ export function get_user_library(user_token: string, library_id: string): Promis
    },
   }
  );
-}
-
-export function create_user_library(user_token: string, library_name: string): Promise<APIResponseWrap<any>>
-{
-    const body = {'library_name': library_name};
-    return apiFetchWrapped<any>('/api/libraries/create', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + user_token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body),
-     }
-    );
 }

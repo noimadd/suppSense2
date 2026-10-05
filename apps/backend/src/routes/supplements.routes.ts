@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { getProductResponse } from '@suppsense/shared-types';
-import { getProduct, getProductByID, getProductIngredients } from '../db/supplement';
+import { getProduct, getProductIngredients } from '../db/supplement';
 
 const router = Router();
 
 router.get('/', async (_req, res) => {
                const placeholder: getProductResponse[] = [{ id: '1', barcode: '121323',
                                                               name: "Great Juice",
+                                                              brand: null,
                                                               description: "This stuff is poison",
                                                               ingredients: [],
                                                               data_added: "Today",
@@ -16,7 +17,7 @@ router.get('/', async (_req, res) => {
 
 router.get('/:barcode', async (req, res) => {
     const { barcode } = req.params;
-    const product = await getProduct(barcode);
+    const product = await getProduct(barcode, (req as any).user.sub);
 
     if (!product) { return res.status(404).json({ message: 'Product not found' }); }
 
@@ -26,30 +27,7 @@ router.get('/:barcode', async (req, res) => {
         id: product.id,
         barcode: product.barcode,
         name: product.name,
-        description: product.description,
-        ingredients,
-        data_added: product.date_added,
-        date_updated: product.date_updated,
-    };
-
-    res.json(response);
-});
-
-router.get('/by_id/:p_id', async (req, res) => {
-    const { p_id } = req.params;
-    const product = await getProductByID(p_id);
-
-    if(!product)
-    {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-
-    const ingredients = await getProductIngredients(product.id);
-
-    const response: getProductResponse = {
-        id: product.id,
-        barcode: product.barcode,
-        name: product.name,
+        brand: product.brand,
         description: product.description,
         ingredients,
         data_added: product.date_added,

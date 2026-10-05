@@ -18,11 +18,18 @@ CREATE TABLE IF NOT EXISTS Products (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     barcode VARCHAR(30) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    image_url VARCHAR(255),
+    brand VARCHAR(255),
     description TEXT,
+    -- 'approved' = visible to everyone, 'pending' = user submission awaiting admin review
+    status VARCHAR(20) NOT NULL DEFAULT 'approved' CONSTRAINT products_status_check CHECK (status IN ('pending', 'approved')),
+    -- who submitted it, NULL = admin/GS1 sourced
+    submitted_by uuid REFERENCES users(id) ON DELETE SET NULL,
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS products_status_idx ON Products (status);
+CREATE INDEX IF NOT EXISTS products_submitted_by_idx ON Products (submitted_by);
 
 CREATE TABLE IF NOT EXISTS Ingredients (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -51,6 +58,7 @@ CREATE TABLE IF NOT EXISTS LibraryData (
     user_id uuid REFERENCES users(id) ON DELETE CASCADE,
     library_name VARCHAR(255) NOT NULL,
     product_ids JSONB,
+    image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

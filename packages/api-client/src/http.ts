@@ -4,35 +4,66 @@
 //   return apiFetch<ReturnType>('/api/endpoint', { method: 'GET' });
 // }
 
-import { API_BASE_URL, authHeader } from './config';
+import { getApiBaseUrl, authHeader } from './config';
+
+/**
+ * Thrown by apiFetch when the server responds with a non-2xx status.
+ * message is the server's { message } when it sent one (e.g. "That username is already taken."),
+ * so it can be shown to the user directly.
+ */
+export class ApiError extends Error {
+    constructor(public status: number, message: string, public path: string) {
+        super(message);
+        this.name = 'ApiError';
+    }
+}
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
     const headers = { ...(await authHeader()), ...(options.headers ?? {}) };
-    const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+    const res = await fetch(`${getApiBaseUrl()}${path}`, { ...options, headers });
 
     if (!res.ok)
     {
-        const err = Object.assign(new Error(`Request to ${path} failed: ${res.status}`), {
-            status: res.status,
-        });
-        throw err;
+        let message = `Request to ${path} failed: ${res.status}`;
+        try
+        {
+            const body = await res.json();
+            if (typeof body?.message === 'string') { message = body.message; }
+        }
+        catch { /* body wasn't JSON, keep the generic message */ }
+
+        throw new ApiError(res.status, message, path);
     }
     return res.json();
 }
 
-type APIResponseWrap<T> = {
-    result: T;
+/**
+ * Like apiFetch but sends a JSON body
+ */
+export function apiFetchJson<T>(path: string, method: string, body?: unknown): Promise<T> {
+    return apiFetch<T>(path, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: body === undefined ? undefined : JSON.stringify(body),
+    });
+}
+
+export type APIResponseWrap<T> = {
+    result: T | string;
     success: boolean;
     status: number;
 }
 
-export async function apiFetchWrapped<T>(path: string, options: RequestInit = {}): Promise<APIResponseWrap<T | string>>
+/**
+ * Doesn't throw. Resolves with the result and status, or null if the request couldn't be made at all.
+ */
+export async function apiFetchWrapped<T>(path: string, options: RequestInit = {}): Promise<APIResponseWrap<T> | null>
 {
     const headers = { ...(await authHeader()), ...(options.headers ?? {}) };
     
     try
     {
-        const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+        const res = await fetch(`${getApiBaseUrl()}${path}`, { ...options, headers });
         if(!res.ok)
         {
             const decode_text = await res.text();

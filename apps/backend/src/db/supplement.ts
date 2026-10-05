@@ -16,28 +16,29 @@ export interface Product {
     id: string;
     barcode: string;
     name: string;
+    brand: string | null;
     description: string;
+    status: 'pending' | 'approved';
+    submitted_by: string | null;
     date_added: string;
     date_updated: string;
 }
 
 /**
- * gets a product from the db via its barcode
+ * gets a product from the db via its barcode.
+ * Pending submissions are only visible to the user who submitted them,
+ * and an approved product always wins over the user's own pending one.
  * @param barcode the barcode of the product
+ * @param user_id the id of the user doing the lookup
  * @returns all product information
  */
-export async function getProduct(barcode: string): Promise<Product | null> {
+export async function getProduct(barcode: string, user_id: string): Promise<Product | null> {
     const result = await pool.query<Product>(
-        'SELECT * FROM products WHERE barcode = $1',
-        [barcode]
-    );
-    return result.rows[0] ?? null;
-}
-
-export async function getProductByID(p_id: string): Promise<Product | null> {
-    const result = await pool.query<Product>(
-        'SELECT * FROM products WHERE id = $1',
-        [p_id]
+        `SELECT * FROM products
+         WHERE barcode = $1 AND (status = 'approved' OR submitted_by = $2)
+         ORDER BY (status = 'approved') DESC
+         LIMIT 1`,
+        [barcode, user_id]
     );
     return result.rows[0] ?? null;
 }

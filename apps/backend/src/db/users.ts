@@ -26,6 +26,19 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 /**
+ * gets a user by id
+ * @param id uuid of user
+ * @returns all user data
+ */
+export async function getUserById(id: string): Promise<User | null> {
+    const result = await pool.query<User>(
+        'SELECT * FROM users WHERE id = $1',
+        [id]
+    );
+    return result.rows[0] ?? null;
+}
+
+/**
  * updates the last login 
  * @param userId uuid of user
  */

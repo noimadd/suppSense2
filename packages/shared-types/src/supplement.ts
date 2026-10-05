@@ -11,6 +11,7 @@ export interface getProductResponse {
     id: string;
     barcode: string;
     name: string;
+    brand: string | null;
     description: string;
     ingredients: IngredientEntry[];
     data_added: string;
