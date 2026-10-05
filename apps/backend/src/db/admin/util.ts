@@ -1,4 +1,4 @@
-export type { Paginated } from '@suppsense/shared-types/src/admin';
+export type { Paginated } from '@suppsense/shared-types/';
 
 /**
  * Thrown by the admin DB layer when something the route asked for can't be done.

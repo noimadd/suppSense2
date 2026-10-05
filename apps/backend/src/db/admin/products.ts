@@ -1,7 +1,7 @@
 import type { PoolClient } from 'pg';
 import { pool } from '../pool';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-import type { ProductStatus, AdminProduct, AdminProductIngredientInput, AdminProductPatch } from '@suppsense/shared-types/src/admin';
+import type { ProductStatus, AdminProduct, AdminProductIngredientInput, AdminProductPatch } from '@suppsense/shared-types/';
 export type { ProductStatus, AdminProduct, AdminProductPatch };
 
 const EDITABLE_PRODUCT_COLUMNS = ['name', 'brand', 'barcode', 'description'] as const;

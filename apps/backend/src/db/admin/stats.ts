@@ -1,5 +1,5 @@
 import { pool } from '../pool';
-import type { DashboardStats, DailyActivity } from '@suppsense/shared-types/src/admin';
+import type { DashboardStats, DailyActivity } from '@suppsense/shared-types/';
 export type { DashboardStats, DailyActivity };
 
 /**

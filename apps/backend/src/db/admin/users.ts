@@ -1,6 +1,6 @@
 import { pool } from '../pool';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-import type { AdminUser, AdminUserPatch } from '@suppsense/shared-types/src/admin';
+import type { AdminUser, AdminUserPatch } from '@suppsense/shared-types/';
 export type { AdminUser, AdminUserPatch };
 
 const USER_COLUMNS = 'id, first_name, last_name, email, username, user_type, email_verified, created_at, last_login';

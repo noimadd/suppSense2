@@ -52,6 +52,17 @@ export interface AccessTokenResponse {
     sid: string;
 }
 
+// -------------------- refresh ----------------
+export interface RefreshRequest {
+    userId: string;
+    sessionId: string;
+    refreshToken: string;
+}
+
+export interface RefreshResponse {
+    accessToken: string;
+}
+
 // -------------------- logout ----------------
 export interface LogoutRequest {
     userId: string;

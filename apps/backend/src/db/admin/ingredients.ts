@@ -1,7 +1,7 @@
 import type { PoolClient } from 'pg';
 import { pool } from '../pool';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-import type { AdminIngredient, AdminIngredientPatch, AdminIngredientCreate } from '@suppsense/shared-types/src/admin';
+import type { AdminIngredient, AdminIngredientPatch, AdminIngredientCreate } from '@suppsense/shared-types/';
 export type { AdminIngredient, AdminIngredientPatch };
 
 const EDITABLE_INGREDIENT_COLUMNS = ['name', 'description', 'paper_url', 'recommended_dosage', 'maximum_dosage', 'image_url', 'verified'] as const;
