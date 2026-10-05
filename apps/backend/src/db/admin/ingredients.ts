@@ -1,6 +1,6 @@
 import type { PoolClient } from 'pg';
-import { pool } from '../db/pool';
-import { Ingredient } from '../db/supplement';
+import { pool } from '../pool';
+import { Ingredient } from '../supplement';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
 
 /**

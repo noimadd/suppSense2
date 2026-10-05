@@ -1,6 +1,6 @@
 import type { PoolClient } from 'pg';
-import { pool } from '../db/pool';
-import { Product } from '../db/supplement';
+import { pool } from '../pool';
+import { Product } from '../supplement';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
 
 export type ProductStatus = 'pending' | 'approved';

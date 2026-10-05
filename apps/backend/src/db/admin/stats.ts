@@ -1,4 +1,4 @@
-import { pool } from '../db/pool';
+import { pool } from '../pool';
 
 /**
  * The four stat cards along the top of the admin dashboard
