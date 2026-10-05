@@ -1,28 +1,8 @@
 import type { PoolClient } from 'pg';
 import { pool } from '../pool';
-import { Ingredient } from '../supplement';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-
-/**
- * An ingredient as the admin dashboard sees it, with how many products use it
- * (so the dashboard can warn before deleting one that's in use)
- */
-export interface AdminIngredient extends Ingredient {
-    product_count: number;
-}
-
-/**
- * Fields an admin can set when creating an ingredient, or change when editing one
- */
-export interface AdminIngredientPatch {
-    name?: string;
-    description?: string;
-    paper_url?: string;
-    recommended_dosage?: string;
-    maximum_dosage?: string;
-    image_url?: string;
-    verified?: boolean;
-}
+import type { AdminIngredient, AdminIngredientPatch, AdminIngredientCreate } from '@suppsense/shared-types/src/admin';
+export type { AdminIngredient, AdminIngredientPatch };
 
 const EDITABLE_INGREDIENT_COLUMNS = ['name', 'description', 'paper_url', 'recommended_dosage', 'maximum_dosage', 'image_url', 'verified'] as const;
 
@@ -90,7 +70,7 @@ export async function getIngredientById(id: string): Promise<AdminIngredient | n
  * @param fields the ingredient's details - name is required
  * @returns the new ingredient
  */
-export async function createIngredient(fields: AdminIngredientPatch & { name: string }): Promise<AdminIngredient> {
+export async function createIngredient(fields: AdminIngredientCreate): Promise<AdminIngredient> {
     await assertNameFree(pool, fields.name, null);
 
     const columns = EDITABLE_INGREDIENT_COLUMNS.filter((c) => fields[c] !== undefined);

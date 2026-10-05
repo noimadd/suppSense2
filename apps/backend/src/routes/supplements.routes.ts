@@ -7,6 +7,7 @@ const router = Router();
 router.get('/', async (_req, res) => {
                const placeholder: getProductResponse[] = [{ id: '1', barcode: '121323',
                                                               name: "Great Juice",
+                                                              brand: null,
                                                               description: "This stuff is poison",
                                                               ingredients: [],
                                                               data_added: "Today",
@@ -26,6 +27,7 @@ router.get('/:barcode', async (req, res) => {
         id: product.id,
         barcode: product.barcode,
         name: product.name,
+        brand: product.brand,
         description: product.description,
         ingredients,
         data_added: product.date_added,

@@ -1,12 +1,4 @@
-/**
- * A page of results plus the total number of matching rows (for "746 Products Found" etc.)
- */
-export interface Paginated<T> {
-    items: T[];
-    total: number;
-    limit: number;
-    offset: number;
-}
+export type { Paginated } from '@suppsense/shared-types/src/admin';
 
 /**
  * Thrown by the admin DB layer when something the route asked for can't be done.

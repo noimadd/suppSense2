@@ -1,32 +1,7 @@
 import { pool } from '../pool';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-
-/**
- * A user as the admin dashboard sees it - never includes the password hash
- */
-export interface AdminUser {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    username: string;
-    user_type: 'user' | 'admin';
-    email_verified: boolean;
-    created_at: string;
-    last_login: string | null;
-}
-
-/**
- * Fields an admin is allowed to change on a user
- */
-export interface AdminUserPatch {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    username?: string;
-    user_type?: 'user' | 'admin';
-    email_verified?: boolean;
-}
+import type { AdminUser, AdminUserPatch } from '@suppsense/shared-types/src/admin';
+export type { AdminUser, AdminUserPatch };
 
 const USER_COLUMNS = 'id, first_name, last_name, email, username, user_type, email_verified, created_at, last_login';
 const EDITABLE_USER_COLUMNS = ['first_name', 'last_name', 'email', 'username', 'user_type', 'email_verified'] as const;

@@ -1,51 +1,8 @@
 import type { PoolClient } from 'pg';
 import { pool } from '../pool';
-import { Product } from '../supplement';
 import { Paginated, HttpError, likePattern, buildSetClause } from './util';
-
-export type ProductStatus = 'pending' | 'approved';
-
-/**
- * One of a product's ingredients, as stored in ProductIngredients joined with Ingredients
- */
-export interface AdminProductIngredient {
-    ingredient_id: string;
-    name: string;
-    amount: string | null;
-    verified: boolean;
-}
-
-/**
- * A product as the admin dashboard sees it, with its ingredients and the submitter's details joined in
- */
-export interface AdminProduct extends Product {
-    ingredients: AdminProductIngredient[];
-    submitter_username: string | null;
-    submitter_email: string | null;
-}
-
-/**
- * An ingredient line on the admin product form. Give ingredient_id to link an existing ingredient,
- * or just a name - an existing ingredient with that name (case-insensitive) is reused,
- * otherwise a new unverified one is created.
- */
-export interface AdminProductIngredientInput {
-    ingredient_id?: string;
-    name?: string;
-    amount?: string | null;
-}
-
-/**
- * Fields an admin is allowed to change on a product or submission.
- * ingredients, if given, replaces the product's whole ingredient list.
- */
-export interface AdminProductPatch {
-    name?: string;
-    brand?: string | null;
-    barcode?: string;
-    description?: string;
-    ingredients?: AdminProductIngredientInput[];
-}
+import type { ProductStatus, AdminProduct, AdminProductIngredientInput, AdminProductPatch } from '@suppsense/shared-types/src/admin';
+export type { ProductStatus, AdminProduct, AdminProductPatch };
 
 const EDITABLE_PRODUCT_COLUMNS = ['name', 'brand', 'barcode', 'description'] as const;
 

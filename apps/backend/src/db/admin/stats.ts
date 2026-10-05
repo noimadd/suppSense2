@@ -1,23 +1,6 @@
 import { pool } from '../pool';
-
-/**
- * The four stat cards along the top of the admin dashboard
- */
-export interface DashboardStats {
-    registered_users: number;
-    pending_submissions: number;
-    products_tracked: number;
-    ingredients_tracked: number;
-}
-
-/**
- * One day's worth of data for the "New Submissions" and "New Users" charts
- */
-export interface DailyActivity {
-    day: string; // YYYY-MM-DD
-    new_users: number;
-    new_submissions: number;
-}
+import type { DashboardStats, DailyActivity } from '@suppsense/shared-types/src/admin';
+export type { DashboardStats, DailyActivity };
 
 /**
  * gets the headline counts for the dashboard stat cards
