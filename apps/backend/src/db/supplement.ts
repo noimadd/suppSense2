@@ -44,6 +44,24 @@ export async function getProduct(barcode: string, user_id: string): Promise<Prod
 }
 
 /**
+* Gets a product from the db via its GUID.
+* Same as for getProduct, but it is garuanteed to always return the same
+* product.
+* @param product_id the guid of the product
+* @user_id the ID of the user doing the lookup
+* @returns all information about the product
+*/
+export async function getProductById(product_id: string, user_id: string): Promise<Product | null> {
+    const result = await pool.query<Product>(
+        `SELECT * FROM products
+         WHERE id = $1 AND (status = 'approved' OR submitted_by = $2)
+         `,
+        [product_id, user_id]
+    );
+    return result.rows[0] ?? null;
+}
+
+/**
  * contains all ingredient info - matches the db ingredient schema
  */
 export interface Ingredient {

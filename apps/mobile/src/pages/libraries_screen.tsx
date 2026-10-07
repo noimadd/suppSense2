@@ -56,12 +56,13 @@ export default function LibrariesScreen(props: LibrariesProps)
         setLoading(false);
     };
 
-    const FetchActiveProduct = async (lib_id: string) =>
+    const FetchActiveProduct = async (product_id: string) =>
     {
-        const res = await getProductById(props.session.accessToken, lib_id);
+        const res = await getProductById(props.session.accessToken, product_id);
     
         if(res === null || res.success !== true)
         {
+            console.log("Failed to find " + product_id)
             Toast.show({type: 'info', text1: 'An error occurred while fetching your product!', text2: 'Please try again later.'});
         }
         else
@@ -73,6 +74,7 @@ export default function LibrariesScreen(props: LibrariesProps)
     
     const RenderLibraryRow = (row_props) =>
     {
+        console.log(row_props.item)
         return(
             <TouchableOpacity style={styles.row_container} onPress={() => { FetchActiveProduct(row_props.item.product_id) }}>
                 <Image source={{ uri: row_props.item.image_url }} style={styles.product_thumbnail}/>

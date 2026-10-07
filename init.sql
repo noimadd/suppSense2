@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS Products (
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(255),
     description TEXT,
+    image_url VARCHAR(255),
     -- 'approved' = visible to everyone, 'pending' = user submission awaiting admin review
     status VARCHAR(20) NOT NULL DEFAULT 'approved' CONSTRAINT products_status_check CHECK (status IN ('pending', 'approved')),
     -- who submitted it, NULL = admin/GS1 sourced
@@ -58,7 +59,6 @@ CREATE TABLE IF NOT EXISTS LibraryData (
     user_id uuid REFERENCES users(id) ON DELETE CASCADE,
     library_name VARCHAR(255) NOT NULL,
     product_ids JSONB,
-    image_url VARCHAR(255),
     date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
