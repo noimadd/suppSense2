@@ -10,35 +10,29 @@ import {
     TouchableOpacity,
     Image,
     Modal,
-    FlatList,
 } from 'react-native';
 
 import Toast from 'react-native-toast-message'
 
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import { get_user_libraries } from '@suppsense/api-client';
+import { get_user_libraries, add_product_to_user_library } from '@suppsense/api-client';
 
-//import { add_product_to_user_library } from '@suppsense/api-client';
+import { getProductResponse, ProductLibrary } from '@suppsense/shared-types';
 
 interface AddToLibraryProps
 {
     isVisible: boolean;
     product: getProductResponse;
     libraries: ProductLibrary[] | null;
-    // Receives an array of all the ids of the libraries that were selected
-    onComplete: (string[]) => void;
+    onComplete: () => void;
     session: StoredSession;
 }
 
 export default function ModalAddToLibrary(props: AddToLibraryProps)
 {
-    const [selected_libraries, set_selected_libraries] = useState<string[] | null>(null);
-    const [loading, set_loading] = useState(false);
-    
-    if(!props.libraries)
-    {
-        
-    }
+    const [selected_libraries, setSelectedLibraries] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [libraries, setLibraries] = useState<ProductLibrary[] | null>(props.libraries);
     
     const FetchUserLibraries = async () =>
     {
@@ -51,27 +45,49 @@ export default function ModalAddToLibrary(props: AddToLibraryProps)
         // Success, show our new libraries
         else
         {
-            props.libraries = res.result;
+            setLibraries(res.result);
         }
         
         setLoading(false);
     };
     
+    if(!libraries)
+    {
+        FetchUserLibraries();
+    }
+     
     const onDone = async () =>
     {
-        set_loading(true);
-                
-        props.onComplete(selected_libraries);
-        set_selected_libraries(null);
+        setLoading(true);
+        
+        for(let i = 0; i < selected_libraries.length; i++)
+        {
+            const res = await add_product_to_user_library(props.session.accessToken, selected_libraries[i], props.product.id);
+        }
+        
+        setSelectedLibraries([]);
+        props.onComplete();
     
-        set_loading(false);
+        setLoading(false);
     };
     
     const toggleSelected = (id) => {
-        set_selected_libraries(prev => 
+        setSelectedLibraries(prev => 
           prev.includes(id) 
             ? prev.filter(item => item !== id) 
             : [...prev, id]
+        );
+    };
+
+    const RenderLibraryRow = (row_props) => {
+        const isSelected = selected_libraries.includes(row_props.item.id);
+        return (
+          <TouchableOpacity
+            style={[styles.library_row, isSelected && styles.selected_library_row]}
+            onPress={() => toggleSelected(row_props.item.id)}
+          >
+            <Text style={styles.library_row_text}>{row_props.item.library_name}</Text>
+          </TouchableOpacity>
         );
     };
 
@@ -80,7 +96,7 @@ export default function ModalAddToLibrary(props: AddToLibraryProps)
        animationType="slide"
        transparent={false}
        visible={props.isVisible}
-       onRequestClose={() => { set_selected_libraries(null); OnDone(); }}
+       onRequestClose={() => { setSelectedLibraries(); OnDone(); }}
     >
         <View style={styles.centeredView}>
             <Text style={styles.page_title}>
@@ -88,19 +104,10 @@ export default function ModalAddToLibrary(props: AddToLibraryProps)
             </Text>
         
             <FlatList
-              data={props.libraries}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => {
-                const isSelected = selected_libraries.includes(item.id);
-                return (
-                  <TouchableOpacity
-                    style={[styles.library_row, isSelected && styles.selected_library_row]}
-                    onPress={() => toggleSelected(item.id)}
-                  >
-                    <Text>{item.library_name}</Text>
-                  </TouchableOpacity>
-                );
-              }}
+                style={styles.library_list}
+                data={libraries}
+                keyExtractor={item => item.id}
+                renderItem={RenderLibraryRow}
             />
         
             <TouchableOpacity
@@ -165,10 +172,24 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     library_row: {
-        height: 40,
-        width: '100%',  
+        height: 50,
+        width: '100%',
+        backgroundColor: '#6c6c6c',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 5,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    library_row_text: {
+        color: '#FFFFFF',
+        fontSize: 18,
     },
     selected_library_row: {
-        color: '#6c6c6c'
+        backgroundColor: '#9c9c9c'
+    },
+    library_list: {
+        width: '90%',
     },
 })

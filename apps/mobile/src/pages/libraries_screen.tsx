@@ -109,7 +109,10 @@ export default function LibrariesScreen(props: LibrariesProps)
 
     if(activeProduct)
     {
-        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)} onIngredientPress={(id: string) => { setActiveIngredientId(id) }}/>;
+        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)}
+                    onIngredientPress={(id: string) => { setActiveIngredientId(id) }}
+                    session={props.session}
+                />;
     }
 
     if(activeLibrary)

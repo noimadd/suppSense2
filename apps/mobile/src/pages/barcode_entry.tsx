@@ -11,17 +11,23 @@ import {
 } from 'react-native';
 import { getProductByBarcode } from '@suppsense/api-client';
 import { getProductResponse } from '@suppsense/shared-types';
+import { StoredSession } from '../auth/auth';
 
 
 import ProductDisplay from './product_display';
 import IngredientOverview from './ingredient_overview';
+
+interface BarcodeEntryProps
+{
+    session: StoredSession;
+};
 
 /**
  * allows the user to enter in a barcode manually (camera scanning to be added later) 
  * this transports them to the ingredients_display page 
  * passes along product data return from api to this page
  */
-export default function BarcodeEntryScreen() {
+export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
     const [barcode, setBarcode] = useState('');
     const [product, setProduct] = useState<getProductResponse | null>(null);
     const [loading, setLoading] = useState(false);
@@ -59,7 +65,7 @@ export default function BarcodeEntryScreen() {
     }
 
     if (product) {
-        return <ProductDisplay product={product} onBack={() => setProduct(null)} onIngredientPress={setIngredient}/>;
+        return <ProductDisplay product={product} onBack={() => setProduct(null)} onIngredientPress={setIngredient} session={props.session}/>;
     }
 
     // visual components consisting of 

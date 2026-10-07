@@ -1,20 +1,32 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getProductResponse } from '@suppsense/shared-types';
 import plus_sign_light from '../../assets/plus_sign_light.png';
+import ModalAddToLibrary from './components/modal_add_to_library'
 
 interface IngredientsScreenProps {
     product: getProductResponse;
     onBack: () => void;
     onIngredientPress: (ingredientName: string) => void;
+    session: StoredSession;
 }
 
 /**
  * displays product name and image (to be added)
  * alongside a list of all the ingredients within the product
  */
-export default function ProductDisplay({ product, onBack, onIngredientPress }: IngredientsScreenProps) {
+export default function ProductDisplay({ product, onBack, onIngredientPress, session }: IngredientsScreenProps)
+{
+    const [adding_product, setAddingProduct] = useState(false);
+
+    if(adding_product)
+    {
+        return (<ModalAddToLibrary isVisible={adding_product} product={product} libraries={null}
+                    onComplete={() => { setAddingProduct(false) }} session={session}/>);
+    }
+
     return (
         <View style={styles.container}>
             {/* return to barcode entry screen */}
@@ -27,7 +39,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress }: I
                     <Text style={styles.productName}>{product.name}</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
                 </View>
-                <TouchableOpacity style={styles.add_to_library_button} onPress={() => {  }}>
+                <TouchableOpacity style={styles.add_to_library_button} onPress={() => { setAddingProduct(true) }}>
                     <Image source={plus_sign_light} style={styles.plus_sign}/>
                 </TouchableOpacity>
             </View>

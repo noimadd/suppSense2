@@ -60,7 +60,7 @@ function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut
             <TopBar onMenuPress={() => setDrawerOpen(true)} onProfilePress={() => {}} />
 
             <View style={styles.content}>
-                {activeView === MainView.BARCODE && <BarcodeEntryScreen />}
+                {activeView === MainView.BARCODE && <BarcodeEntryScreen session={session}/>}
                 {activeView === MainView.LIBRARIES && (
                     <LibrariesScreen
                         session={session}
