@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-message'
 import { StoredSession } from '../auth/auth';
 import { ProductLibrary } from '@suppsense/shared-types';
 import { get_user_library, getProductById } from '@suppsense/api-client';
+import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface LibraryProps
 {
@@ -82,9 +83,7 @@ export default function LibraryScreen(props: LibraryProps)
                 { library.library_name }
             </Text>
             <TouchableOpacity style={styles.add_product_button} onPress={() => { props.onAddProduct(library.id) }}>
-                <Text style={styles.add_product_button_label}>
-                    {'+'}
-                </Text>        
+                <Image source={plus_sign_light} style={styles.plus_sign}/>
             </TouchableOpacity>
         </View>
     );
@@ -154,37 +153,33 @@ const styles = StyleSheet.create({
     product_thumbnail: {
         height: 130,
         width: 130,
-    },
-    product_title: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        backgroundColor: 'transparent',
-        marginTop: 'auto',
-        marginBottom: 1,
+        borderRadius: 10,
+        marginRight: 10,
     },
     page_title: {
         color: '#FFFFFF',
         fontSize: 30,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        marginRight: 10,
     },
     add_product_button :
     {
         backgroundColor: '#0000FF',
-        borderRadius: 15,
-        width: 35,
-        height: 35,
+        borderRadius: 10,
+        width: 30,
+        height: 30,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    add_product_button_label :
-    {
-        flex: 1,
-        textAlign: 'center',
-        color: '#FFFFFF',
-        fontSize: 30,
+    plus_sign: {
+        height: 30,
+        width: 30,
     },
-    page_header :
-    {
+    page_header: {
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        marginBottom: 10,
     },
 })

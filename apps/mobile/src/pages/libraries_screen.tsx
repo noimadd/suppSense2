@@ -18,9 +18,10 @@ import { get_user_libraries, getProductById } from '@suppsense/api-client';
 import { ProductLibrary } from '@suppsense/shared-types';
 import { StoredSession } from '../auth/auth';
 import LibraryScreen from './library_screen';
-import ProductDisplay from './product_display'
-import IngredientOverview from './ingredient_overview'
-import ModalCreateLibrary from './components/modal_create_library'
+import ProductDisplay from './product_display';
+import IngredientOverview from './ingredient_overview';
+import ModalCreateLibrary from './components/modal_create_library';
+import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface LibrariesProps
 {
@@ -62,7 +63,6 @@ export default function LibrariesScreen(props: LibrariesProps)
     
         if(res === null || res.success !== true)
         {
-            console.log("Failed to find " + product_id)
             Toast.show({type: 'info', text1: 'An error occurred while fetching your product!', text2: 'Please try again later.'});
         }
         else
@@ -74,7 +74,6 @@ export default function LibrariesScreen(props: LibrariesProps)
     
     const RenderLibraryRow = (row_props) =>
     {
-        console.log(row_props.item)
         return(
             <TouchableOpacity style={styles.row_container} onPress={() => { FetchActiveProduct(row_props.item.product_id) }}>
                 <Image source={{ uri: row_props.item.image_url }} style={styles.product_thumbnail}/>
@@ -87,6 +86,7 @@ export default function LibrariesScreen(props: LibrariesProps)
     {
         return(
             <TouchableOpacity style={styles.row_header} onPress={() => { props.onAddProduct(header_props) }}>
+                <Image source={plus_sign_light} style={styles.plus_sign}/>
             </TouchableOpacity>
         );
     };
@@ -139,9 +139,7 @@ export default function LibrariesScreen(props: LibrariesProps)
                 {'Libraries'}
             </Text>
             <TouchableOpacity style={styles.add_library_button} onPress={() => { setCreatingLibrary(true) }}>
-                <Text style={styles.page_title}>
-                {"+"}
-                </Text>
+                <Image source={plus_sign_light} style={styles.plus_sign}/>
             </TouchableOpacity>
         </View>
     );
@@ -246,7 +244,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#0000FF',
         height: 30,
         width: 30,
-        padding: 'auto',
+        padding: 0,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -256,9 +254,16 @@ const styles = StyleSheet.create({
         width: 50,
         backgroundColor: '#0000FF',
         borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     product_thumbnail: {
         height: '100%',
         width: '100%',
     },
+    plus_sign: {
+        height: 30,
+        width: 30,
+    }
 })

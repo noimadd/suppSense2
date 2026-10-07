@@ -80,11 +80,12 @@ VALUES
     ('Theobromine', 'Mild stimulant found in cacao', 'https://example.com/papers/theobromine', '50mg', '250mg', FALSE, 'https://example.com/img/theobromine.png');
 
 -- fake product with barcode '1'
-INSERT INTO Products (barcode, name, description)
+INSERT INTO Products (barcode, name, description, image_url)
 VALUES (
     '1',
     'Test Pre-Workout Formula',
-    'Fake product for local testing purposes'
+    'Fake product for local testing purposes',
+    'https://m.media-amazon.com/images/I/71-lmdLaYmL._AC_SY300_SX300_QL70_FMwebp_.jpg'
 );
 
 INSERT INTO ProductIngredients (product_id, ingredient_id, amount)
