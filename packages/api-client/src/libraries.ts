@@ -43,3 +43,17 @@ export function create_user_library(user_token: string, library_name: string): P
      }
     );
 }
+
+export function add_product_to_user_library(user_token: string, library_id: string, product_id: string): Promise<APIResponseWrap<null>>
+{
+ const body = {'library_id': library_id, 'product_id': product_id};
+ return apiFetchWrapped<null>('/api/libraries/insert_product', {
+   method: 'POST',
+   headers: {
+    'Authorization': 'Bearer ' + user_token,
+    'Content-Type': 'application/json'
+   },
+   body: JSON.stringify(body),
+  }
+ );
+}

@@ -1,6 +1,8 @@
 import React from 'react';
+import { Image } from 'react-native';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getProductResponse } from '@suppsense/shared-types';
+import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface IngredientsScreenProps {
     product: getProductResponse;
@@ -19,9 +21,16 @@ export default function ProductDisplay({ product, onBack, onIngredientPress }: I
             <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Text style={styles.backButtonText}>{'< Back'}</Text>
             </TouchableOpacity>
-
-            <Text style={styles.productName}>{product.name}</Text>
-            <Text style={styles.productDescription}>{product.description}</Text>
+            
+            <View style={styles.page_header}>
+                <View>
+                    <Text style={styles.productName}>{product.name}</Text>
+                    <Text style={styles.productDescription}>{product.description}</Text>
+                </View>
+                <TouchableOpacity style={styles.add_to_library_button} onPress={() => {  }}>
+                    <Image source={plus_sign_light} style={styles.plus_sign}/>
+                </TouchableOpacity>
+            </View>
 
             <Text style={styles.sectionTitle}>Ingredients</Text>
             <View>
@@ -89,5 +98,27 @@ const styles = StyleSheet.create({
     ingredientAmount: {
         color: '#aaa',
         fontSize: 15,
+    },
+    page_header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        marginBottom: 10,
+        color: '#FF0000',
+    },
+    add_to_library_button :
+    {
+        backgroundColor: '#0000FF',
+        borderRadius: 10,
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 'auto',
+    },
+    plus_sign: {
+        height: 30,
+        width: 30,
     },
 });
