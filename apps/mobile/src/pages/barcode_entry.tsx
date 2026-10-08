@@ -67,19 +67,18 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
 
     if(isScanning)
     {
-    
         return (
-            <View style={styles.container}>
+            <View style={styles.cameraContainer}>
                 <CameraView style={styles.camera} facing={facing}
                     barcodeScannerSettings={{ barcodeTypes: ['ean13', 'upc_a'] }}
-                    onBarcodeScanned={ (res: BarcodeScanningResult) => {  }}
+                    onBarcodeScanned={ (res: BarcodeScanningResult) => { setIsScanning(false); setBarcode(res.data); }}
                 />
+                <TouchableOpacity style={styles.backButton} onPress={() => setIsScanning(false)} key={'BackButton'}>
+                    <Text style={styles.backButtonText}>{'< Back'}</Text>
+                </TouchableOpacity>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
                         <Text style={styles.buttonText}>Flip Camera</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-                        <Text style={styles.buttonText}>Scan</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -144,6 +143,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#0f0f0f',
     },
+    cameraContainer: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        backgroundColor: '#0f0f0f',
+    },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -197,6 +202,15 @@ const styles = StyleSheet.create({
     camera: {
         width: '100%',
         height: '100%',
+        position: 'absolute',
+    },
+    backButtonText: {
+        color: '#0f62fe',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        left: 10,
         position: 'absolute',
     },
 });
