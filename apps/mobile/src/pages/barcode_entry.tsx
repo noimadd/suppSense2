@@ -39,10 +39,6 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
 
-    useEffect(() => {
-        if (!permission) requestPermission();
-    }, [permission]);
-
     const toggleCameraFacing = () => {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
@@ -72,6 +68,11 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
 
     if(isScanning)
     {
+        if (!permission)
+        {
+            requestPermission();
+        }
+        
         return (
             <View style={styles.cameraContainer}>
                 <CameraView style={styles.camera} facing={facing}
