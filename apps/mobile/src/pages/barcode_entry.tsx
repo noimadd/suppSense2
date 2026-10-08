@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import {
     View,
@@ -37,6 +37,11 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
     
     const [isScanning, setIsScanning] = useState(false);
     const [facing, setFacing] = useState<CameraType>('back');
+    const [permission, requestPermission] = useCameraPermissions();
+
+    useEffect(() => {
+        if (!permission) requestPermission();
+    }, [permission]);
 
     const toggleCameraFacing = () => {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
