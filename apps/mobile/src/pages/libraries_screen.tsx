@@ -26,7 +26,7 @@ import plus_sign_light from '../../assets/plus_sign_light.png';
 interface LibrariesProps
 {
     onExit: () => void;
-    onAddProduct: (string) => void;
+    onAddProduct: () => void;
     session: StoredSession;
 }
 

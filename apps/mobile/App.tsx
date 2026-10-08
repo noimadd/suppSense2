@@ -36,7 +36,7 @@ function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [activeView, setActiveView] = useState<MainView>(MainView.BARCODE);
     const [loggingOut, setLoggingOut] = useState(false);
-
+    
     const menuItems = [
         { label: 'Supplement Lookup', onPress: () => setActiveView(MainView.BARCODE) },
         { label: 'Libraries', onPress: () => setActiveView(MainView.LIBRARIES) },
@@ -65,10 +65,9 @@ function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut
                     <LibrariesScreen
                         session={session}
                         onExit={() => setActiveView(MainView.BARCODE)}
-                        onAddProduct={(libraryId) => {  }}
+                        onAddProduct={ () => setActiveView(MainView.BARCODE) }
                     />
                 )}
-
             </View>
 
             <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} items={menuItems} />

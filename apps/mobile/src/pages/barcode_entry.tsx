@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import {
     View,
     Text,
@@ -33,6 +34,13 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [ingredient, setIngredient] = useState<string | null>(null);
+    
+    const [isScanning, setIsScanning] = useState(false);
+    const [facing, setFacing] = useState<CameraType>('back');
+
+    const toggleCameraFacing = () => {
+        setFacing(current => (current === 'back' ? 'front' : 'back'));
+    }
 
     // only submit on containing data
     const canSubmit = barcode.trim() !== '' && !loading;
@@ -57,8 +65,26 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         }
     };
 
-    // TODO: connect this with a barcode scanning and camera library
-    const handleScanBarcode = () => {};
+    if(isScanning)
+    {
+    
+        return (
+            <View style={styles.container}>
+                <CameraView style={styles.camera} facing={facing}
+                    barcodeScannerSettings={{ barcodeTypes: ['ean13', 'upc_a'] }}
+                    onBarcodeScanned={ (res: BarcodeScanningResult) => {  }}
+                />
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+                        <Text style={styles.buttonText}>Flip Camera</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+                        <Text style={styles.buttonText}>Scan</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
 
     if (ingredient) {
         return <IngredientOverview ingredientName={ingredient} onBack={() => setIngredient(null)} />;
@@ -79,7 +105,7 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         >
             <Text style={styles.title}>Barcode Entry</Text>
 
-            <TouchableOpacity style={styles.button} onPress={handleScanBarcode}>
+            <TouchableOpacity style={styles.button} onPress={() => { setIsScanning(true) }}>
                 <Text style={styles.buttonText}>Scan Barcode</Text>
             </TouchableOpacity>
 
@@ -113,6 +139,7 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
+        height: '100%',
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#0f0f0f',
@@ -157,5 +184,19 @@ const styles = StyleSheet.create({
     error: {
         color: 'red',
         marginBottom: 15,
+    },
+    buttonContainer: {
+        marginBottom: 10,
+        marginTop: 'auto',
+        gap: 10,
+        flexDirection: 'column',
+        backgroundColor: 'transparent',
+        width: '100%',
+        paddingHorizontal: 64,
+    },
+    camera: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
     },
 });
