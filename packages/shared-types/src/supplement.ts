@@ -3,8 +3,10 @@
 
 // ----------- Product -------------
 export interface IngredientEntry {
+    id: string;
     name: string;
-    amount?: string;
+    amount: number;
+    unit: string;
 }
 
 export interface getProductResponse {

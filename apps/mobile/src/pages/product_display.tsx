@@ -53,7 +53,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, ses
                         onPress={() => onIngredientPress(item.name)}
                     >
                         <Text style={styles.ingredientName}>{item.name}</Text>
-                        {item.amount && <Text style={styles.ingredientAmount}>{item.amount}</Text>}
+                        {item.amount && <Text style={styles.ingredientAmount}>{item.amount.toFixed(2) + item.unit}</Text>}
                     </TouchableOpacity>
                 ))}
             </View>

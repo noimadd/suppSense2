@@ -218,5 +218,8 @@ const styles = StyleSheet.create({
     backButton: {
         left: 10,
         position: 'absolute',
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: '#0f0f0fa0',
     },
 });

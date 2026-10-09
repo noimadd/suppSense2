@@ -5,8 +5,10 @@ import { pool } from './pool';
  * each Product contains many of these
  */
 export interface IngredientEntry {
+    id: string;
     name: string;
-    amount?: string;
+    amount: number;
+    unit: string;
 }
 
 /**
@@ -97,7 +99,8 @@ export interface ProductIngredient {
     id: string;
     product_id: string;
     ingredient_id: string;
-    amount: string | null;
+    amount: number;
+    unit: string;
 }
 
 /**
@@ -107,7 +110,7 @@ export interface ProductIngredient {
  */
 export async function getProductIngredients(productId: string): Promise<IngredientEntry[]> {
     const result = await pool.query<IngredientEntry>(
-        `SELECT i.name, pi.amount
+        `SELECT i.id, i.name, pi.amount, pi.unit
             FROM productingredients pi
             JOIN ingredients i ON i.id = pi.ingredient_id
             WHERE pi.product_id = $1`,

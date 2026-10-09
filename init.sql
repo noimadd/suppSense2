@@ -50,8 +50,19 @@ CREATE TABLE IF NOT EXISTS ProductIngredients (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id uuid NOT NULL REFERENCES Products(id) ON DELETE CASCADE,
     ingredient_id uuid NOT NULL REFERENCES Ingredients(id) ON DELETE CASCADE,
-    amount VARCHAR(50),
+    amount REAL NOT NULL,
+    unit VARCHAR(50) NOT NULL,
     UNIQUE (product_id, ingredient_id)
+);
+
+-- Links libraries and ingredient summaries
+CREATE TABLE IF NOT EXISTS LibraryIngredients(
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    library_id uuid NOT NULL REFERENCES LibraryData(id) ON DELETE CASCADE,
+    ingredient_id uuid NOT NULL REFERENCES Ingredients(id) ON DELETE CASCADE,
+    amount REAL NOT NULL,
+    unit VARCHAR(50) NOT NULL,
+    UNIQUE (library_id, ingredient_id)
 );
 
 CREATE TABLE IF NOT EXISTS LibraryData (
@@ -88,20 +99,20 @@ VALUES (
     'https://m.media-amazon.com/images/I/71-lmdLaYmL._AC_SY300_SX300_QL70_FMwebp_.jpg'
 );
 
-INSERT INTO ProductIngredients (product_id, ingredient_id, amount)
-SELECT p.id, i.id, v.amount
+INSERT INTO ProductIngredients (product_id, ingredient_id, amount, unit)
+SELECT p.id, i.id, v.amount, v.unit
 FROM (
     VALUES
-        ('Creatine Monohydrate', '5g'),
-        ('Caffeine Anhydrous', '300mg'),
-        ('Beta-Alanine', '3.2g'),
-        ('L-Citrulline Malate', '6g'),
-        ('Betaine Anhydrous', '2.5g'),
-        ('L-Tyrosine', '1g'),
-        ('Taurine', '1g'),
-        ('Alpha-GPC', '300mg'),
-        ('Huperzine A', '200mcg'),
-        ('Theobromine', '100mg')
-) AS v(ingredient_name, amount)
+        ('Creatine Monohydrate', 5.0, 'g'),
+        ('Caffeine Anhydrous', 300.0, 'mg'),
+        ('Beta-Alanine', 3.2, 'g'),
+        ('L-Citrulline Malate', 6.0, 'g'),
+        ('Betaine Anhydrous', 2.5, 'g'),
+        ('L-Tyrosine', 1.0, 'g'),
+        ('Taurine', 1.0, 'g'),
+        ('Alpha-GPC', 300.0, 'mg'),
+        ('Huperzine A', 200.0, 'mcg'),
+        ('Theobromine', 100.0, 'mg')
+) AS v(ingredient_name, amount, unit)
 JOIN Ingredients i ON i.name = v.ingredient_name
 JOIN Products p ON p.barcode = '1';
