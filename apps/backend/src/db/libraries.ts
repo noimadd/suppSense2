@@ -1,6 +1,6 @@
 import { pool } from './pool';
 import { ProductEntry, ProductLibrary } from '@suppsense/shared-types'
-import { ProductIngredient, getProductIngredients } from './supplement'
+import { ProductIngredient, getProductIngredients, IngredientEntry } from './supplement'
 
 /**
 * Gets all libraries belonging to a given user
@@ -90,4 +90,17 @@ export async function removeProductFromProductLibrary(user_id: string, library_i
 	'UPDATE librarydata SET product_ids = (SELECT jsonb_agg_strict(filt) FROM jsonb_array_elements(librarydata.product_ids) AS filt WHERE filt->>\'product_id\' != $1) WHERE librarydata.user_id = $2 AND librarydata.id = $3',
 	[product_id, user_id, library_id]
 	);
+}
+
+/**
+* Collects all the ingredients from this library.
+*/
+export async function getProductLibrarySummary(user_id: string, library_id: string): Promise<IngredientEntry[]>
+{
+	const result = await pool.query<IngredientEntry>(
+		"SELECT ingredients.name, libi.ingredient_id, libi.amount, libi.unit FROM" +
+		"(SELECT * FROM libraryingredients WHERE library_id = $1) AS libi INNER JOIN ingredients ON libi.ingredient_id=ingredients.id",
+		[library_id]
+	);
+	return result.rows;
 }

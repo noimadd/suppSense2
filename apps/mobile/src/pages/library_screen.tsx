@@ -15,8 +15,8 @@ import {useSafeAreaInsets, SafeAreaProvider} from 'react-native-safe-area-contex
 import Toast from 'react-native-toast-message'
 
 import { StoredSession } from '../auth/auth';
-import { ProductLibrary } from '@suppsense/shared-types';
-import { get_user_library, getProductById } from '@suppsense/api-client';
+import { ProductLibrary, IngredientEntry } from '@suppsense/shared-types';
+import { get_user_library, get_product_library_summary, getProductById } from '@suppsense/api-client';
 import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface LibraryProps
@@ -36,6 +36,7 @@ export default function LibraryScreen(props: LibraryProps)
 {
     const [loading, setLoading] = useState(props.libraryData ? false : true);
     const [library, setLibrary] = useState(props.libraryData ? props.libraryData : {});
+    const [library_ingredients, setLibraryIngredients] = useState<IngredientEntry | null>(null);
 
     const FetchLibraryData = async () =>
     {
@@ -54,12 +55,31 @@ export default function LibraryScreen(props: LibraryProps)
         setLoading(false);
     };
 
+    const FetchLibraryIngredients = async () => {
+        const lib_id = props.libraryId ? props.libraryId : props.libraryData.id;
+        const res = await get_product_library_summary(props.session.accessToken, lib_id);
+        
+        if(res === null || res.success !== true)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while fetching library details!', text2: 'Please try again later.'});
+        }
+        else
+        {
+            setLibraryIngredients(res.result);
+        }
+    };
+
     // We werent given any data so we need to fetch it ourselves
     if(!props.libraryData)
     {
         useEffect(() => {
             FetchLibraryData();
         }, [props.session]);
+    }
+    
+    if(!library_ingredients)
+    {
+        FetchLibraryIngredients();
     }
     
     const insets = useSafeAreaInsets();
@@ -86,6 +106,40 @@ export default function LibraryScreen(props: LibraryProps)
                 <Image source={plus_sign_light} style={styles.plus_sign}/>
             </TouchableOpacity>
         </View>
+    );
+    
+    rows.push(
+        <Text style={styles.section_title}>
+            {"Ingredient Summary"}
+        </Text>
+    );
+    
+    if(library_ingredients)
+    {
+        for(let i = 0; i < library_ingredients.length; i++)
+        {
+            const ingredient = library_ingredients[i];
+            
+            rows.push(
+                <TouchableOpacity style={styles.ingredient_row}
+                        key={ingredient.name}
+                        onPress={() => {  }}
+                    >
+                        <Text style={styles.ingredient_name}>{ingredient.name}</Text>
+                        {ingredient.amount &&
+                            <Text style={styles.ingredient_amount}>
+                                {ingredient.amount.toFixed(2) + ingredient.unit}
+                            </Text>
+                        }
+                </TouchableOpacity>
+            );
+        }
+    }
+
+    rows.push(
+        <Text style={styles.section_title}>
+            {"Products"}
+        </Text>
     );
     
     for(let i = 0; i < library.product_ids.length; i++)
@@ -150,6 +204,24 @@ const styles = StyleSheet.create({
         marginBottom: 1,
         flexDirection: 'row',
     },
+    ingredient_row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 12,
+        borderBottomColor: '#333',
+        borderBottomWidth: 1,
+    },
+    ingredient_name: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    ingredient_amount: {
+        color: '#aaa',
+        fontSize: 15,
+    },
     product_thumbnail: {
         height: 130,
         width: 130,
@@ -159,6 +231,12 @@ const styles = StyleSheet.create({
     page_title: {
         color: '#FFFFFF',
         fontSize: 30,
+        backgroundColor: 'transparent',
+        marginRight: 10,
+    },
+    section_title: {
+        color: '#FFFFFF',
+        fontSize: 18,
         backgroundColor: 'transparent',
         marginRight: 10,
     },

@@ -1,4 +1,4 @@
-import { ProductLibrary, ProductEntry } from '@suppsense/shared-types';
+import { ProductLibrary, ProductEntry, IngredientEntry } from '@suppsense/shared-types';
 import { apiFetchWrapped, APIResponseWrap } from './http';
 
 /**
@@ -54,6 +54,18 @@ export function add_product_to_user_library(user_token: string, library_id: stri
     'Content-Type': 'application/json'
    },
    body: JSON.stringify(body),
+  }
+ );
+}
+
+export function get_product_library_summary(user_token: string, library_id: string): Promise<APIResponseWrap<Array<IngredientEntry>> | null>
+{
+ return apiFetchWrapped<Array<IngredientEntry>>('/api/libraries/summary/' + library_id, {
+   method: 'GET',
+   headers: {
+    'Authorization': 'Bearer ' + user_token,
+    'Content-Type': 'application/json'
+   },
   }
  );
 }

@@ -1,7 +1,14 @@
 import { Router } from 'express';
 //import { getUserLibrariesResponse } from '@suppsense/shared-types';
 import { decodeAccessToken, isValidResourceURL } from '../middleware/auth.middleware'
-import { getProductLibraries, getProductLibrary, createProductLibrary, deleteProductLibrary, addProductToProductLibrary, removeProductFromProductLibrary } from '../db/libraries'
+import { getProductLibraries,
+         getProductLibrary,
+         createProductLibrary,
+         deleteProductLibrary,
+         addProductToProductLibrary,
+         removeProductFromProductLibrary,
+         getProductLibrarySummary
+        } from '../db/libraries'
 
 const router = Router();
 
@@ -185,6 +192,33 @@ router.delete('/remove_product', async (req, res) => {
     await removeProductFromProductLibrary(token_decode.sub, library_id, product_id);
         
     return res.json({message: 'Success'});
+});
+
+router.get('/summary/:library_id', async (req, res) => {    
+    // We need to take the user's token and decode it to find their ID.
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if(!token)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const token_decode = decodeAccessToken(token);
+    if(!token_decode)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const library_id = req.params.library_id;
+    
+    const query_res = await getProductLibrarySummary(token_decode.sub, library_id);
+    
+    if(!query_res)
+    {
+        return res.status(404).json({ message: 'Not Found' });
+    }
+    
+    res.json(query_res);
 });
 
 export default router;
