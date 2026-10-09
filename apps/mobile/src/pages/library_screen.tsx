@@ -23,6 +23,7 @@ interface LibraryProps
 {
     onExit: () => void;
     onViewProduct: (string) => void;
+    onIngredientPress: (string) => void;
     onAddProduct: (string) => void;
     session: StoredSession;
     
@@ -122,15 +123,15 @@ export default function LibraryScreen(props: LibraryProps)
             
             rows.push(
                 <TouchableOpacity style={styles.ingredient_row}
-                        key={ingredient.name}
-                        onPress={() => {  }}
-                    >
-                        <Text style={styles.ingredient_name}>{ingredient.name}</Text>
-                        {ingredient.amount &&
-                            <Text style={styles.ingredient_amount}>
-                                {ingredient.amount.toFixed(2) + ingredient.unit}
-                            </Text>
-                        }
+                    key={ingredient.name}
+                    onPress={() => { props.onIngredientPress(ingredient.name) }}
+                >
+                    <Text style={styles.ingredient_name}>{ingredient.name}</Text>
+                    {ingredient.amount &&
+                        <Text style={styles.ingredient_amount}>
+                            {ingredient.amount.toFixed(2) + ingredient.unit}
+                        </Text>
+                    }
                 </TouchableOpacity>
             );
         }
@@ -205,17 +206,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     ingredient_row: {
+        marginLeft: 20,
+        marginRight: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 8,
         borderBottomColor: '#333',
         borderBottomWidth: 1,
     },
     ingredient_name: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '600',
     },
     ingredient_amount: {

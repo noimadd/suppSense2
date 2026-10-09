@@ -122,6 +122,7 @@ export default function LibrariesScreen(props: LibrariesProps)
                 session={props.session}
                 onExit={() => setActiveLibrary(null)}
                 onViewProduct={(product_id) => { FetchActiveProduct(product_id) }}
+                onIngredientPress={(id: string) => { setActiveIngredientId(id) }}
                 onAddProduct={props.onAddProduct}
                 libraryData={activeLibrary}
             />
