@@ -109,10 +109,11 @@ export default function LibrariesScreen(props: LibrariesProps)
 
     if(activeProduct)
     {
-        return <ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)}
+        return(<ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)}
                     onIngredientPress={(id: string) => { setActiveIngredientId(id) }}
+                    onReloadLibraries={() => { FetchUserLibraries() }}
                     session={props.session}
-                />;
+                />);
     }
 
     if(activeLibrary)

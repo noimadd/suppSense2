@@ -24,7 +24,8 @@ interface AddToLibraryProps
     isVisible: boolean;
     product: getProductResponse;
     libraries: ProductLibrary[] | null;
-    onComplete: () => void;
+    // @arg is true if the product was added and we need to reload the libraries and false otherwise
+    onComplete: (boolean) => void;
     session: StoredSession;
 }
 
@@ -60,13 +61,14 @@ export default function ModalAddToLibrary(props: AddToLibraryProps)
     {
         setLoading(true);
         
+        const should_reload_libraries = selected_libraries.length > 0;
         for(let i = 0; i < selected_libraries.length; i++)
         {
             const res = await add_product_to_user_library(props.session.accessToken, selected_libraries[i], props.product.id);
         }
         
         setSelectedLibraries([]);
-        props.onComplete();
+        props.onComplete(should_reload_libraries);
     
         setLoading(false);
     };

@@ -103,9 +103,6 @@ export default function LibraryScreen(props: LibraryProps)
             <Text style={styles.page_title}>
                 { library.library_name }
             </Text>
-            <TouchableOpacity style={styles.add_product_button} onPress={() => { props.onAddProduct(library.id) }}>
-                <Image source={plus_sign_light} style={styles.plus_sign}/>
-            </TouchableOpacity>
         </View>
     );
     
@@ -141,6 +138,12 @@ export default function LibraryScreen(props: LibraryProps)
         <Text style={styles.section_title}>
             {"Products"}
         </Text>
+    );
+    
+    rows.push(
+        <TouchableOpacity style={styles.add_product_button} onPress={() => { props.onAddProduct(library.id) }}>
+            <Image source={plus_sign_light} style={styles.plus_sign}/>
+        </TouchableOpacity>
     );
     
     for(let i = 0; i < library.product_ids.length; i++)
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginLeft: '5%',
         marginRight: '5%',
-        marginBottom: 1,
+        marginBottom: 10,
         flexDirection: 'row',
     },
     ingredient_row: {
@@ -235,22 +238,25 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 30,
         backgroundColor: 'transparent',
-        marginRight: 10,
     },
     section_title: {
         color: '#FFFFFF',
         fontSize: 18,
         backgroundColor: 'transparent',
-        marginRight: 10,
+        marginTop: 10,
     },
     add_product_button :
     {
         backgroundColor: '#0000FF',
         borderRadius: 10,
-        width: 30,
-        height: 30,
+        width: '90%',
+        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
+        marginLeft: '5%',
+        marginRight: '5%',
+        marginTop: 10,
+        marginBottom: 10,
     },
     plus_sign: {
         height: 30,
@@ -261,6 +267,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '100%',
-        marginBottom: 10,
     },
 })

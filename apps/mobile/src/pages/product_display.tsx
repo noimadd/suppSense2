@@ -10,6 +10,7 @@ interface IngredientsScreenProps {
     product: getProductResponse;
     onBack: () => void;
     onIngredientPress: (ingredientName: string) => void;
+    onReloadLibraries: () => void;
     session: StoredSession;
 }
 
@@ -17,14 +18,17 @@ interface IngredientsScreenProps {
  * displays product name and image (to be added)
  * alongside a list of all the ingredients within the product
  */
-export default function ProductDisplay({ product, onBack, onIngredientPress, session }: IngredientsScreenProps)
+export default function ProductDisplay({ product, onBack, onIngredientPress, onReloadLibraries, session }: IngredientsScreenProps)
 {
     const [adding_product, setAddingProduct] = useState(false);
 
     if(adding_product)
     {
-        return (<ModalAddToLibrary isVisible={adding_product} product={product} libraries={null}
-                    onComplete={() => { setAddingProduct(false) }} session={session}/>);
+        return(<ModalAddToLibrary isVisible={adding_product} product={product} libraries={null}
+                    onComplete={(should_reload_libraries: boolean) => { setAddingProduct(false); if(should_reload_libraries){ onReloadLibraries() }}}
+                    session={session}
+                />
+               );
     }
 
     return (

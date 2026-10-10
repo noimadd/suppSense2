@@ -17,6 +17,7 @@ import { StoredSession } from '../auth/auth';
 
 import ProductDisplay from './product_display';
 import IngredientOverview from './ingredient_overview';
+import ProductEntryScreen from './product_entry_screen';
 
 interface BarcodeEntryProps
 {
@@ -43,6 +44,8 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
 
+    const [isEntering, setIsEntering] = useState(false);
+
     // only submit on containing data
     const canSubmit = barcode.trim() !== '' && !loading;
 
@@ -55,13 +58,25 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         setIngredient(null);
         setLoading(true);
 
-        try {
+        try
+        {
             const result = await getProductByBarcode(barcode.trim());
             setProduct(result);
-        } catch (err: any) {
+        }
+        catch(err: any)
+        {
             console.error('Barcode lookup error:', err);
             setError(err?.status === 404 ? 'No product found for that barcode.' : 'Something went wrong looking that up.');
-        } finally {
+            
+            // Product doesnt exist in the DB so allow the user to enter it as a custom one
+            if(err?.status === 404)
+            {
+                setIsEntering(true);
+            }
+        
+        }
+        finally
+        {
             setLoading(false);
         }
     };
@@ -91,12 +106,19 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         );
     }
 
+    if(isEntering)
+    {
+        return <ProductEntryScreen onExit={() => { setIsEntering(false) }}/>
+    }
+
     if (ingredient) {
         return <IngredientOverview ingredientName={ingredient} onBack={() => setIngredient(null)} />;
     }
 
     if (product) {
-        return <ProductDisplay product={product} onBack={() => setProduct(null)} onIngredientPress={setIngredient} session={props.session}/>;
+        return <ProductDisplay product={product} onBack={() => setProduct(null)} onIngredientPress={setIngredient} session={props.session}
+                    onReloadLibraries={() => {}}
+                />;
     }
 
     // visual components consisting of 
