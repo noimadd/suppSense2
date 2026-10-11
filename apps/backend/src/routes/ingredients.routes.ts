@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getIngredientResponse } from '@suppsense/shared-types';
-import { getIngredient } from '../db/supplement';
+import { getIngredient, searchIngredients } from '../db/supplement';
 
 const router = Router();
 
@@ -24,6 +24,19 @@ router.get('/:name', async (req, res) => {
     };
 
     res.json(response);
+});
+
+router.get('/search/:name_part', async (req, res) => {
+    const name_part = req.params.name_part;
+    
+    const result = await searchIngredients(name_part, 10);
+
+    if(!result)
+    {
+        return res.status(404).json({ message: 'Ingredient not found' });
+    }
+    
+    res.json(result);
 });
 
 export default router;

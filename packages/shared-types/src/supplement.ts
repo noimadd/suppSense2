@@ -44,3 +44,9 @@ export interface getIngredientResponse {
     date_added: string;
     date_updated: string;
 }
+
+export interface  IngredientSearchResult
+{
+	id: string;
+	name: string;
+}

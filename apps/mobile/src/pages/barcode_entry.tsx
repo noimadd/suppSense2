@@ -65,7 +65,7 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
         }
         catch(err: any)
         {
-            console.error('Barcode lookup error:', err);
+            //console.error('Barcode lookup error:', err);
             setError(err?.status === 404 ? 'No product found for that barcode.' : 'Something went wrong looking that up.');
             
             // Product doesnt exist in the DB so allow the user to enter it as a custom one
@@ -108,7 +108,7 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
 
     if(isEntering)
     {
-        return <ProductEntryScreen onExit={() => { setIsEntering(false) }}/>
+        return <ProductEntryScreen session={props.session} barcode={barcode} onExit={() => { setIsEntering(false) }}/>
     }
 
     if (ingredient) {

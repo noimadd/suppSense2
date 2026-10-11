@@ -3,6 +3,7 @@ import {
     View,
     Text,
     TextInput,
+    FlatList,
     TouchableOpacity,
     StyleSheet,
     KeyboardAvoidingView,
@@ -11,9 +12,12 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message'
 import { IngredientEntry } from '@suppsense/shared-types'
+import ModalPickIngredient from './components/modal_pick_ingredient'
 
 interface ProductEntryProps
 {
+    session: StoredSession;
+    barcode: string;
     onExit: () => void;
     onComplete: () => void;
 }
@@ -21,14 +25,15 @@ interface ProductEntryProps
 enum ProductEntryState
 {
     BEFORE,
-    ENTRY_SCREEN
+    ENTRY_SCREEN,
+    INGREDIENT_SELECTION
 }
 
 export default function ProductEntryScreen(props: ProductEntryProps)
 {
     const [product_name, setProductName] = useState('');
-    const [barcode, setBarcode] = useState('');
-    const [ingredients, setIngredients] = useState<IngredientEntry>([]);
+    const [barcode, setBarcode] = useState(props.barcode);
+    const [ingredients, setIngredients] = useState<IngredientSearchResult>([]);
     const [entry_state, setEntryState] = useState(ProductEntryState.BEFORE);
 
     const canSubmit = product_name.trim() !== '' && barcode.trim() !== '' && ingredients.trim() !== '' && !loading;
@@ -65,6 +70,36 @@ export default function ProductEntryScreen(props: ProductEntryProps)
         );
     }
     
+    if(entry_state === ProductEntryState.INGREDIENT_SELECTION)
+    {
+        return(
+            <ModalPickIngredient isVisible={true} onCancel={() => { setEntryState(ProductEntryState.ENTRY_SCREEN) }}
+                onComplete={(chosen: IngredientSearchResult) => { setEntryState(ProductEntryState.ENTRY_SCREEN); setIngredients([...ingredients, chosen]) }} session={props.session}/>
+        );
+    }
+
+    const RenderIngredientListRow = (row_props) => {
+        return(
+            <View style={styles.ingredient_list_row}>
+                <Text style={styles.ingredient_list_text}>
+                    {row_props.item.name}
+                </Text>
+            </View>
+        );
+    };
+    
+    const RenderIngredientHeaderRow = (row_props) => {
+        return(
+            <TouchableOpacity style={styles.ingredient_list_row}
+                onPress={() => { setEntryState(ProductEntryState.INGREDIENT_SELECTION) }}
+            >
+                <Text style={styles.ingredient_header_text}>
+                    {'Add Ingredient'}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
+    
     return(
         <KeyboardAvoidingView
             style={styles.container}
@@ -92,6 +127,14 @@ export default function ProductEntryScreen(props: ProductEntryProps)
                 keyboardType="default"
             />
             
+            <FlatList
+                style={styles.ingredient_list}
+                data={ingredients}
+                keyExtractor={item => item.name}
+                renderItem={RenderIngredientListRow}
+                ListHeaderComponent={() => { return RenderIngredientHeaderRow() }}
+            />
+            
             <TouchableOpacity
                 style={[styles.button, !canSubmit && styles.buttonDisabled]}
                 onPress={handleSubmit}
@@ -117,7 +160,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         padding: 10,
-        padding: 20,
         backgroundColor: '#0f0f0f',
     },
     title: {
@@ -163,5 +205,32 @@ const styles = StyleSheet.create({
     error: {
         color: 'red',
         marginBottom: 15,
+    },
+    ingredient_list: {
+        flex: 1,
+        width: '90%',
+        paddingLeft: 'auto',
+        paddingRight: 'auto',
+    },
+    ingredient_list_row: {
+        height: 50,
+        width: '100%',
+        backgroundColor: '#6c6c6c',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 5,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    ingredient_list_text: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    ingredient_header_text: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
