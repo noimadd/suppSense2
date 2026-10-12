@@ -108,7 +108,7 @@ export default function BarcodeEntryScreen(props: BarcodeEntryProps) {
 
     if(isEntering)
     {
-        return <ProductEntryScreen session={props.session} barcode={barcode} onExit={() => { setIsEntering(false) }}/>
+        return <ProductEntryScreen session={props.session} barcode={barcode} onExit={() => { setIsEntering(false) }} onComplete={() => setIsEntering(false)}/>
     }
 
     if (ingredient) {

@@ -10,16 +10,18 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
-import Toast from 'react-native-toast-message'
-import { IngredientEntry } from '@suppsense/shared-types'
-import ModalPickIngredient from './components/modal_pick_ingredient'
+import Toast from 'react-native-toast-message';
+
+import { IngredientEntry, createProductRequest } from '@suppsense/shared-types';
+import { createUserSubmittedProduct } from '@suppsense/api-client';
+import ModalPickIngredient from './components/modal_pick_ingredient';
 
 interface ProductEntryProps
 {
     session: StoredSession;
     barcode: string;
     onExit: () => void;
-    onComplete: () => void;
+    onComplete: (product_id: string) => void;
 }
 
 enum ProductEntryState
@@ -33,19 +35,50 @@ export default function ProductEntryScreen(props: ProductEntryProps)
 {
     const [product_name, setProductName] = useState('');
     const [barcode, setBarcode] = useState(props.barcode);
-    const [ingredients, setIngredients] = useState<IngredientSearchResult>([]);
+    const [ingredients, setIngredients] = useState<IngredientEntry[]>([]);
     const [entry_state, setEntryState] = useState(ProductEntryState.BEFORE);
 
-    const canSubmit = product_name.trim() !== '' && barcode.trim() !== '' && ingredients.trim() !== '' && !loading;
+    const canSubmit = product_name.trim().length > 5 && barcode.trim().length > 0 && ingredients.length > 0;
 
     const handleSubmit = async () => {
         if (!canSubmit) return;        
+        
+        // Form our request object
+        const product_request = {
+            "barcode": barcode,
+            "name": product_name,
+            "brand": 'Fortnite.com',
+            "description": 'This rocks fr',
+            "ingredients": ingredients,
+            "image_url": "https://m.media-amazon.com/images/I/71-lmdLaYmL._AC_SY300_SX300_QL70_FMwebp_.jpg",
+        };
+        
+        const result = await createUserSubmittedProduct(props.session.accessToken, product_request);
+        console.log(result);
+        
+        if(result === null || result.success !== true)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while creating your product!', text2: 'Please try again later.'});
+        }
+        else
+        {
+            props.onComplete();
+        }
         
     };
 
     const handleExit = async () => {
         props.onExit();
-    }
+    };
+    
+    const insertIngredient = (ingredient) => {
+        const exists = ingredients.some(i => i.id === ingredient.id);
+        
+        if(!exists)
+        {
+            setIngredients([...ingredients, ingredient]);
+        }
+    };
     
     // Allow the user to cancel out if they dont feel like entering the product details
     if(entry_state === ProductEntryState.BEFORE)
@@ -74,7 +107,7 @@ export default function ProductEntryScreen(props: ProductEntryProps)
     {
         return(
             <ModalPickIngredient isVisible={true} onCancel={() => { setEntryState(ProductEntryState.ENTRY_SCREEN) }}
-                onComplete={(chosen: IngredientSearchResult) => { setEntryState(ProductEntryState.ENTRY_SCREEN); setIngredients([...ingredients, chosen]) }} session={props.session}/>
+                onComplete={(chosen: IngredientEntry) => { setEntryState(ProductEntryState.ENTRY_SCREEN); insertIngredient(chosen) }} session={props.session}/>
         );
     }
 
@@ -84,13 +117,16 @@ export default function ProductEntryScreen(props: ProductEntryProps)
                 <Text style={styles.ingredient_list_text}>
                     {row_props.item.name}
                 </Text>
+                <Text style={styles.ingredient_list_amount}>
+                    {row_props.item.amount.toFixed(2) + row_props.item.unit}
+                </Text>
             </View>
         );
     };
     
     const RenderIngredientHeaderRow = (row_props) => {
         return(
-            <TouchableOpacity style={styles.ingredient_list_row}
+            <TouchableOpacity style={styles.ingredient_header_row}
                 onPress={() => { setEntryState(ProductEntryState.INGREDIENT_SELECTION) }}
             >
                 <Text style={styles.ingredient_header_text}>
@@ -223,9 +259,26 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    ingredient_header_row: {
+        height: 50,
+        width: '100%',
+        backgroundColor: '#0f62fe',
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 5,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
     ingredient_list_text: {
         color: '#fff',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    ingredient_list_amount: {
+        marginLeft: 'auto',
+        color: '#fff',
+        fontSize: 13,
         fontWeight: 'bold',
     },
     ingredient_header_text: {

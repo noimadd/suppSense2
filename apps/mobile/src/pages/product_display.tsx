@@ -22,6 +22,8 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
 {
     const [adding_product, setAddingProduct] = useState(false);
 
+    console.log(product);
+
     if(adding_product)
     {
         return(<ModalAddToLibrary isVisible={adding_product} product={product} libraries={null}
@@ -36,7 +38,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
             {/* return to barcode entry screen */}
             <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Text style={styles.backButtonText}>{'< Back'}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>            
             
             <View style={styles.page_header}>
                 <View>
@@ -47,6 +49,8 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
                     <Image source={plus_sign_light} style={styles.plus_sign}/>
                 </TouchableOpacity>
             </View>
+            
+            <Image source={{ uri: product.image_url }} style={styles.product_thumbnail}/>
 
             <Text style={styles.sectionTitle}>Ingredients</Text>
             <View>
@@ -71,7 +75,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#0f0f0f',
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     backButton: {
         marginBottom: 15,
@@ -136,5 +140,13 @@ const styles = StyleSheet.create({
     plus_sign: {
         height: 30,
         width: 30,
+    },
+    product_thumbnail: {
+        height: 300,
+        width: 300,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        borderRadius: 10,
+        marginBottom: 10,
     },
 });

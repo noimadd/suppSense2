@@ -1,4 +1,5 @@
 import { pool } from './pool';
+import { createProductRequest } from '@suppsense/shared-types'
 
 /**
 * contains a single ingredient and it's amount
@@ -24,6 +25,7 @@ export interface Product {
 	submitted_by: string | null;
 	date_added: string;
 	date_updated: string;
+	image_url: string;
 }
 
 /**
@@ -43,6 +45,7 @@ export async function getProduct(barcode: string, user_id: string): Promise<Prod
 		[barcode, user_id]
 	);
 	
+	console.log(result.rows[0]);
 	return result.rows[0] ?? null;
 }
 
@@ -144,4 +147,47 @@ export async function getProductIngredients(productId: string): Promise<Ingredie
 	);
 	
 	return result.rows;
+}
+
+/**
+* Creates a new user submitted product using the details provided
+* @param user_id the id of the user who wants to create this product
+* @param product a filled out createProductRequest containing all the fields for the product
+* @returns the ID of the newly created product
+*/
+export async function createUserSubmittedProduct(user_id: string, product: createProductRequest): Promise<string | null> {
+	// Insert the product row
+	const result = await pool.query<Product>(
+		`INSERT INTO products (barcode, name, brand, description, status, submitted_by, date_added, date_updated, image_url)
+			VALUES($1, $2, $3, $4, 'pending', $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $6) RETURNING *`,
+		[product.barcode, product.name, product.brand, product.description, user_id, product.image_url]
+	);
+	
+	// Get the ID of the new product
+	if(!result.rows)
+	{
+		return null;
+	}
+	
+	const product_id = result.rows[0].id
+	
+	// Insert our ingredient rows
+	const requests = [];
+	for(let i = 0; i < product.ingredients.length; i++)
+	{
+		const ingredient = product.ingredients[i];
+	
+		requests.push(
+			pool.query<Ingredient>(
+				'INSERT INTO productingredients (product_id, ingredient_id, amount, unit)' +
+				' VALUES($1, $2, $3, $4)',
+				[product_id, ingredient.id, ingredient.amount, ingredient.unit]
+			)
+		);
+	}
+	
+	// Wait for all the insertions to finish before notifying the user
+	await Promise.all(requests);
+	
+	return product_id;
 }

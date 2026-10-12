@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@react-native-picker/picker": "2.11.4",
     "@suppsense/api-client": "*",
     "@suppsense/shared-types": "*",
     "expo": "~57.0.13",

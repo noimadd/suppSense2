@@ -18,9 +18,22 @@ export interface getProductResponse {
     ingredients: IngredientEntry[];
     data_added: string;
     date_updated: string;
+    image_url: string;
 }
 
+export interface createProductRequest {
+    barcode: string;
+    name: string;
+    brand: string;
+    description: string;
+    ingredients: IngredientEntry[];
+    image_url: string;
+}
 
+export interface createProductResponse
+{
+    product_id: string;
+}
 
 // --------- product/ingredient link ---------
 export interface linkIngredientRequest {
@@ -28,7 +41,6 @@ export interface linkIngredientRequest {
     ingredientId: string;
     amount?: string;
 }
-
 
 
 // ----------- Ingredient -------- 
