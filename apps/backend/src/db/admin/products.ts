@@ -149,7 +149,7 @@ async function replaceProductIngredients(client: PoolClient, product_id: string,
     await client.query('DELETE FROM productingredients WHERE product_id = $1', [product_id]);
     if (ids.length) {
         await client.query(
-            `INSERT INTO productingredients (product_id, ingredient_id, amount)
+            `INSERT INTO productingredients (product_id, ingredient_id, amount, unit)
              SELECT $1, ingredient_id, amount, unit FROM unnest($2::uuid[], $3::real[], $4::varchar[]) AS t(ingredient_id, amount, unit)`,
             [product_id, ids, amounts, units]
         );

@@ -72,7 +72,7 @@ function isIngredientList(v: unknown): boolean {
     return Array.isArray(v) && v.every((entry) =>
         entry && typeof entry === 'object' &&
         (isNonEmptyString(entry.ingredient_id) || isNonEmptyString(entry.name)) &&
-        (entry.unit === undefined || entry.unit === null || (isString(entry.unit) && entry.amount.unit <= 50))
+        (isNonEmptyString(entry.unit) && entry.unit.length < 50 && entry.amount !== undefined && entry.amount > 0)
     );
 }
 
