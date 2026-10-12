@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@react-native-picker/picker": "2.11.4",
     "@suppsense/api-client": "*",
     "@suppsense/shared-types": "*",
     "expo": "~57.0.13",
+    "expo-camera": "~57.0.6",
     "expo-modules-core": "~57.0.11",
     "expo-secure-store": "~57.0.1",
     "expo-status-bar": "~57.0.1",

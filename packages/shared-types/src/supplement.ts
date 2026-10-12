@@ -3,20 +3,44 @@
 
 // ----------- Product -------------
 export interface IngredientEntry {
+    id: string;
     name: string;
-    amount?: string;
+    amount: number;
+    unit: string;
 }
 
 export interface getProductResponse {
     id: string;
     barcode: string;
     name: string;
+    brand: string | null;
     description: string;
     ingredients: IngredientEntry[];
     data_added: string;
     date_updated: string;
+    image_url: string;
 }
 
+export interface createProductRequest {
+    barcode: string;
+    name: string;
+    brand: string;
+    description: string;
+    ingredients: IngredientEntry[];
+    image_url: string;
+}
+
+export interface createProductResponse
+{
+    product_id: string;
+}
+
+// --------- product/ingredient link ---------
+export interface linkIngredientRequest {
+    productId: string;
+    ingredientId: string;
+    amount?: string;
+}
 
 
 // ----------- Ingredient -------- 
@@ -31,4 +55,10 @@ export interface getIngredientResponse {
     image_url: string;
     date_added: string;
     date_updated: string;
+}
+
+export interface  IngredientSearchResult
+{
+	id: string;
+	name: string;
 }

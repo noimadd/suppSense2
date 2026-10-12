@@ -26,12 +26,12 @@ interface SignupScreenProps
  * @returns login page
  */
 enum SignupState {
-    REGISTER,
-    VERIFY
+    REGISTER = 'REGISTER',
+    VERIFY = 'VERIFY',
 }
 
 export default function SignupScreen({ onSignupExit, onSignupSuccess }: SignupScreenProps) {
-    const [signupState, setSignupState] = useState<SignupState>('REGISTER');
+    const [signupState, setSignupState] = useState<SignupState>(SignupState.REGISTER);
     
     const [email, SetEmail] = useState('');
     const [password, SetPassword] = useState('');
@@ -59,7 +59,7 @@ export default function SignupScreen({ onSignupExit, onSignupSuccess }: SignupSc
         {
             const challenge_res = await email_verify_challenge({email: email, password: password});
             setLoading(false);
-            setSignupState('VERIFY');
+            setSignupState(SignupState.VERIFY);
         }
         // User email is already registered so move them over to the login screen and show a message
         else if(res.status == 401)
@@ -83,7 +83,7 @@ export default function SignupScreen({ onSignupExit, onSignupSuccess }: SignupSc
     
     if(signupState === 'VERIFY')
     {
-        return(<EmailChallengeScreen email={email} password={password} onChallengeComplete={() => onSignupSuccess() } onChallengeExit={() => setSignupState('REGISTER') } />);
+        return(<EmailChallengeScreen email={email} password={password} onChallengeComplete={() => onSignupSuccess() } onChallengeExit={() => setSignupState(SignupState.REGISTER) } />);
     }
     
     return(

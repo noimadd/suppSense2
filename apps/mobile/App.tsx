@@ -1,84 +1,128 @@
 import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { configureApiClient } from '@suppsense/api-client';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import LoginScreen from './src/pages/login_screen';
-import LogoutScreen from './src/pages/logout_screen';
-import SignupScreen from './src/pages/signup_screen';
-import BarcodeEntryManual from './src/pages/barcode_entry_manual';
+// Main Screens
+import BarcodeEntryScreen  from './src/pages/barcode_entry';
 import LibrariesScreen from './src/pages/libraries_screen';
-import LibraryScreen from './src/pages/library_screen';
+
+// Components
+import TopBar from './src/pages/components/top_bar';
+import SideMenu from './src/pages/components/side_menu';
+
+// Auth
+import LoginScreen from './src/pages/auth/login_screen';
+import SignupScreen from './src/pages/auth/signup_screen';
 import { getSession, getAccessToken } from './src/auth/session_storage';
-import { StoredSession } from '../auth/auth';
+import { handleLogout } from './src/auth/logout';
+import { StoredSession } from './src/auth/auth';
 
 configureApiClient(getAccessToken);
 
 enum ActiveView {
-    LOGIN,
-    SIGNUP,
-    MAINAPP,
-    LIBRARIES,
-    LIBRARY,
+    LOGIN = 'LOGIN',
+    SIGNUP = 'SIGNUP',
+    MAINAPP = 'MAINAPP',
+}
+
+enum MainView {
+    BARCODE = 'BARCODE',
+    LIBRARIES = 'LIBRARIES',
 }
 
 // to be replaced later with the actual main application
-function MainApp({ onLoggedOut }: { onLoggedOut: () => void }) {
+function MainApp({ session, onLoggedOut }: { session: StoredSession; onLoggedOut: () => void }) {
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [activeView, setActiveView] = useState<MainView>(MainView.BARCODE);
+    const [loggingOut, setLoggingOut] = useState(false);
+    
+    const menuItems = [
+        { label: 'Supplement Lookup', onPress: () => setActiveView(MainView.BARCODE) },
+        { label: 'Libraries', onPress: () => setActiveView(MainView.LIBRARIES) },
+        {
+            label: 'Log out',
+            onPress: async () => {
+                if (loggingOut) return;
+                setLoggingOut(true);
+                try {
+                    await handleLogout();
+                    onLoggedOut();
+                } finally {
+                    setLoggingOut(false);
+                }
+            },
+        }
+    ];
+
     return (
-        <View style={styles.container}>
-            <BarcodeEntryManual />
-            <LogoutScreen onLoggedOut={onLoggedOut} />
+        <View style={styles.screen}>
+            <TopBar onMenuPress={() => setDrawerOpen(true)} onProfilePress={() => {}} />
+
+            <View style={styles.content}>
+                {activeView === MainView.BARCODE && <BarcodeEntryScreen session={session}/>}
+                {activeView === MainView.LIBRARIES && (
+                    <LibrariesScreen
+                        session={session}
+                        onExit={() => setActiveView(MainView.BARCODE)}
+                        onAddProduct={ () => setActiveView(MainView.BARCODE) }
+                    />
+                )}
+            </View>
+
+            <SideMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} items={menuItems} />
         </View>
     );
 }
-
 // runs by default to check if the user is logged in
 // if they are logged in main app is rendered, if not login screen is rendered
 export default function App() {
-    const [activeView, setActiveView] = useState<ActiveView>('LOGIN');
-    const [session, setSession] = useState<StoredSession>(null);
+    return (
+        <SafeAreaProvider>
+            <AppContent />
+        </SafeAreaProvider>
+    );
+}
 
-    const [activeLibrary, setActiveLibrary] = useState<ProductLibrary>(null);
+function AppContent() {
+    const [activeView, setActiveView] = useState<ActiveView>(ActiveView.LOGIN);
+    const [session, setSession] = useState<StoredSession | null>(null);
 
     useEffect(() => {
-        getSession().then((session_res) => {setSession(session_res)});
-    }, []);
-/*
-    useEffect(() => {
-        getSession().then((session) => { if(session !== null) { setActiveView('MAINAPP') } });
-    }, []);
-*/
+        getSession().then((storedSession) => {
+            if (storedSession !== null) {
+                setSession(storedSession);
+                setActiveView(ActiveView.MAINAPP);
+            }
+        });
+    }, [activeView]);
 
-    console.log("Render");
-
-    if(activeView === 'LOGIN')
+    if(activeView === ActiveView.LOGIN)
     {
-        return <LoginScreen onLoginSuccess={() => setActiveView('MAINAPP')} onSignup={() => setActiveView('SIGNUP')} />;
+        return <LoginScreen onLoginSuccess={() => setActiveView(ActiveView.MAINAPP)} onSignup={() => setActiveView(ActiveView.SIGNUP)} />;
     }
-    else if(activeView === 'SIGNUP')
+    else if(activeView === ActiveView.SIGNUP)
     {
-        return <SignupScreen onSignupSuccess={() => setActiveView('EMAIL_CHALLENGE')} onSignupExit={() => setActiveView('LOGIN')}/>;
-    }
-    else if(activeView === 'LIBRARY')
-    {
-        return <LibraryScreen session={session} libraryData={activeLibrary} onExit={() => setActiveView('MAINAPP')}
-                    onViewProduct={(product_id) => { console.log(product_id) }} onAddProduct={(target_library_id) => console.log(target_library_id) }
-                    />;
+        // onSignupSuccess only fires once SignupScreen's internal email verification flow has completed,
+        // so the user is verified and should log in - not routed to a separate challenge state.
+        return <SignupScreen onSignupSuccess={() => setActiveView(ActiveView.LOGIN)} onSignupExit={() => setActiveView(ActiveView.LOGIN)}/>;
     }
 
-    return <LibrariesScreen session={session} onExit={() => setActiveView('MAINAPP')}
-                onViewLibrary={(library) => { setActiveLibrary(library); setActiveView('LIBRARY') }}
-                onViewProduct={(product_id) => { console.log(product_id) }}
-                onAddProduct={(target_library_id) => { console.log(target_library_id)} }
-            />;
+    if (session === null) {
+        return <ActivityIndicator />;
+    }
 
-    //return <MainApp onLoggedOut={() => setActiveView('LOGIN')} />;
+    return <MainApp session={session} onLoggedOut={() => setActiveView(ActiveView.LOGIN)} />;
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
+    flex: 1,
+    backgroundColor: '#0f0f12',
+  },
+  content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0f0f12',
   },
 });

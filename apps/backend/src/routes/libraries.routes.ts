@@ -1,7 +1,14 @@
 import { Router } from 'express';
 //import { getUserLibrariesResponse } from '@suppsense/shared-types';
 import { decodeAccessToken, isValidResourceURL } from '../middleware/auth.middleware'
-import { getProductLibraries, getProductLibrary, createProductLibrary, deleteProductLibrary, addProductToProductLibrary, removeProductFromProductLibrary } from '../db/libraries'
+import { getProductLibraries,
+         getProductLibrary,
+         createProductLibrary,
+         deleteProductLibrary,
+         addProductToProductLibrary,
+         removeProductFromProductLibrary,
+         getProductLibrarySummary
+        } from '../db/libraries'
 
 const router = Router();
 
@@ -75,20 +82,20 @@ router.post('/create', async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     
-    const { library_name, img_url } = req.body ?? {};
+    const { library_name } = req.body ?? {};
     
-    if(!library_name || !img_url)
+    if(!library_name)
     {
-        return res.status(401).json({ message: 'Invalid library name/image url' });
+        return res.status(401).json({ message: 'Invalid library name!' });
     }
     
-    if(!isValidResourceURL(img_url))
-    {
-        return res.status(401).json({ message: 'Invalid image url' });
-    }
+    //if(!isValidResourceURL(img_url))
+    //{
+    //    return res.status(401).json({ message: 'Invalid image url' });
+    //}
     
     // Create the library entry in the DB.
-    await createProductLibrary(token_decode.sub, library_name, img_url);
+    await createProductLibrary(token_decode.sub, library_name);
     
     return res.json({message: 'Success'});
 });
@@ -147,11 +154,11 @@ router.post('/insert_product', async (req, res) => {
         return res.status(401).json({ message: 'Invalid library or product id' });
     }
     
-    // Inser the product entry into the DB.
+    // Insert the product entry into the DB.
     // Note(Leo): Insertion is protected via the JWT token encoding the user that it belongs to by their ID. We dont have to do a seperate query to 
     // verify ownership of the library because the insertion query does a combined check of both the user ID and the library ID when deleting.
     await addProductToProductLibrary(token_decode.sub, library_id, product_id);
-        
+    
     return res.json({message: 'Success'});
 });
 
@@ -185,6 +192,33 @@ router.delete('/remove_product', async (req, res) => {
     await removeProductFromProductLibrary(token_decode.sub, library_id, product_id);
         
     return res.json({message: 'Success'});
+});
+
+router.get('/summary/:library_id', async (req, res) => {    
+    // We need to take the user's token and decode it to find their ID.
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if(!token)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const token_decode = decodeAccessToken(token);
+    if(!token_decode)
+    {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const library_id = req.params.library_id;
+    
+    const query_res = await getProductLibrarySummary(token_decode.sub, library_id);
+    
+    if(!query_res)
+    {
+        return res.status(404).json({ message: 'Not Found' });
+    }
+    
+    res.json(query_res);
 });
 
 export default router;

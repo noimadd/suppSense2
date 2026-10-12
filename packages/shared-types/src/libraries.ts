@@ -17,7 +17,6 @@ export interface ProductLibrary
 	user_id: string,
 	library_name: string,
 	product_ids: ProductEntry[],
-	image_url: string,
 	date_added: string,
 	date_updated: string,
 }

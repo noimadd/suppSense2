@@ -6,23 +6,27 @@ import {
     View,
     StyleSheet,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    Image
 } from 'react-native';
 
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message'
 
-import { get_user_libraries } from '@suppsense/api-client';
+import { get_user_libraries, getProductById } from '@suppsense/api-client';
 import { ProductLibrary } from '@suppsense/shared-types';
 import { StoredSession } from '../auth/auth';
+import LibraryScreen from './library_screen';
+import ProductDisplay from './product_display';
+import IngredientOverview from './ingredient_overview';
+import ModalCreateLibrary from './components/modal_create_library';
+import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface LibrariesProps
 {
     onExit: () => void;
-    onViewLibrary: (ProductLibrary) => void;
-    onViewProduct: (string) => void;
-    onAddProduct: (string) => void;
+    onAddProduct: () => void;
     session: StoredSession;
 }
 
@@ -30,6 +34,11 @@ export default function LibrariesScreen(props: LibrariesProps)
 {
     const [loading, setLoading] = useState(true);
     const [libraries, setLibraries] = useState([]);
+    const [activeLibrary, setActiveLibrary] = useState<ProductLibrary | null>(null);
+    const [activeProduct, setActiveProduct] = useState<getProductResponse | null>(null);
+    const [activeIngredientId, setActiveIngredientId] = useState<string | null>(null);
+
+    const [creatingLibrary, setCreatingLibrary] = useState(false);
 
     const FetchUserLibraries = async () =>
     {
@@ -47,11 +56,27 @@ export default function LibrariesScreen(props: LibrariesProps)
         
         setLoading(false);
     };
+
+    const FetchActiveProduct = async (product_id: string) =>
+    {
+        const res = await getProductById(props.session.accessToken, product_id);
+    
+        if(res === null || res.success !== true)
+        {
+            Toast.show({type: 'info', text1: 'An error occurred while fetching your product!', text2: 'Please try again later.'});
+        }
+        else
+        {
+            setActiveProduct(res.result);
+        }
+        
+    };
     
     const RenderLibraryRow = (row_props) =>
     {
         return(
-            <TouchableOpacity style={styles.row_container} onPress={() => { props.onViewProduct(row_props.item.product_id) }}>
+            <TouchableOpacity style={styles.row_container} onPress={() => { FetchActiveProduct(row_props.item.product_id) }}>
+                <Image source={{ uri: row_props.item.image_url }} style={styles.product_thumbnail}/>
                 <Text style={styles.product_title}>{row_props.item.name}</Text>
             </TouchableOpacity>
         );
@@ -61,6 +86,7 @@ export default function LibrariesScreen(props: LibrariesProps)
     {
         return(
             <TouchableOpacity style={styles.row_header} onPress={() => { props.onAddProduct(header_props) }}>
+                <Image source={plus_sign_light} style={styles.plus_sign}/>
             </TouchableOpacity>
         );
     };
@@ -69,34 +95,76 @@ export default function LibrariesScreen(props: LibrariesProps)
         FetchUserLibraries();
     }, [props.session]);
 
+    const insets = useSafeAreaInsets();
+
     if(loading)
     {
         return <ActivityIndicator color="#fff" />;
     }
 
+    if(activeIngredientId)
+    {
+        return <IngredientOverview ingredientName={activeIngredientId} onBack={() => setActiveIngredientId(null)} />;
+    }
+
+    if(activeProduct)
+    {
+        return(<ProductDisplay product={activeProduct} onBack={() => setActiveProduct(null)}
+                    onIngredientPress={(id: string) => { setActiveIngredientId(id) }}
+                    onReloadLibraries={() => { FetchUserLibraries() }}
+                    session={props.session}
+                />);
+    }
+
+    if(activeLibrary)
+    {
+        return(
+            <LibraryScreen 
+                session={props.session}
+                onExit={() => setActiveLibrary(null)}
+                onViewProduct={(product_id) => { FetchActiveProduct(product_id) }}
+                onIngredientPress={(id: string) => { setActiveIngredientId(id) }}
+                onAddProduct={props.onAddProduct}
+                libraryData={activeLibrary}
+            />
+        );
+    }
+
     const rows = [];
 
     rows.push(
-        <Text style={styles.page_title} key={'PageTitle'}>
-            {'Libraries'}
-        </Text>
+        <TouchableOpacity style={styles.backButton} onPress={props.onExit} key={'BackButton'}>
+                <Text style={styles.backButtonText}>{'< Back'}</Text>
+        </TouchableOpacity>
+    );
+
+    rows.push(
+        <View key={'PageTitle'} style={styles.page_header}>
+            <Text style={styles.page_title} >
+                {'Libraries'}
+            </Text>
+            <TouchableOpacity style={styles.add_library_button} onPress={() => { setCreatingLibrary(true) }}>
+                <Image source={plus_sign_light} style={styles.plus_sign}/>
+            </TouchableOpacity>
+        </View>
     );
     
     for(let i = 0; i < libraries.length; i++)
     {
         rows.push(
-            <TouchableOpacity style={styles.row_title} onPress={() => { props.onViewLibrary(libraries[i]) }}>
-                <Text style={styles.row_title} key={libraries[i].id}>
+            <TouchableOpacity style={styles.row_title} onPress={() => { setActiveLibrary(libraries[i]) }}  key={libraries[i].id + 'name'}>
+                <Text style={styles.row_title}>
                     {libraries[i].library_name}
                 </Text>
             </TouchableOpacity>
-            );
+        );
+        
         rows.push(
             <FlatList
                 key={libraries[i].id}
                 data={libraries[i].product_ids}
                 renderItem={RenderLibraryRow}
-                keyExtractor={item => item.product_id}
+                keyExtractor={item => item.product_id + libraries[i].id}
                 horizontal={true}
                 ListHeaderComponent={() => { return LibraryRowHeader(libraries[i].id) }}
             />
@@ -104,27 +172,39 @@ export default function LibrariesScreen(props: LibrariesProps)
     }
 
     return(
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.outer_div}>
-                <ScrollView style={styles.outer_div}>
-                    {
-                        rows
-                    }
-                </ScrollView>
-            </SafeAreaView>
+        <SafeAreaProvider style={[styles.outer_div, { paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
+            <ModalCreateLibrary isVisible={creatingLibrary} session={props.session}
+                onCancel={() => setCreatingLibrary(false)}
+                onComplete={() => { setCreatingLibrary(false); FetchUserLibraries(); } }
+            />
+            
+            <ScrollView>
+                {
+                    rows
+                }
+            </ScrollView>
         </SafeAreaProvider>
     );
 }
 
 const styles = StyleSheet.create({
     outer_div: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         backgroundColor: '#0f0f12',
     },
     text: {
         color: '#000',
         fontSize: 15,
         fontWeight: '600'
+    },
+    backButtonText: {
+        color: '#0f62fe',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        marginRight: 10,
     },
     row_title: {
         color: '#FFFFFF',
@@ -136,9 +216,10 @@ const styles = StyleSheet.create({
     row_container: {
         height: 140,
         width: 140,
-        backgroundColor: '#FF0000',
+        backgroundColor: '#606060',
         borderRadius: 10,
         marginLeft: 10,
+        overflow: 'hidden',
     },
     product_title: {
         color: '#FFFFFF',
@@ -152,10 +233,42 @@ const styles = StyleSheet.create({
         fontSize: 30,
         backgroundColor: 'transparent'
     },
+    page_header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+    },
+    add_library_button:
+    {
+        color: '#FFFFFF',
+        fontSize: 30,
+        backgroundColor: 'transparent',
+        marginLeft: 10,
+        borderRadius: 10,
+        backgroundColor: '#0000FF',
+        height: 30,
+        width: 30,
+        padding: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     row_header: {
         height: 140,
         width: 50,
         backgroundColor: '#0000FF',
         borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
+    product_thumbnail: {
+        height: '100%',
+        width: '100%',
+    },
+    plus_sign: {
+        height: 30,
+        width: 30,
+    }
 })

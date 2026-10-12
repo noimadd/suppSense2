@@ -1,5 +1,6 @@
 import { pool } from './pool';
 import { ProductEntry, ProductLibrary } from '@suppsense/shared-types'
+import { ProductIngredient, getProductIngredients, IngredientEntry } from './supplement'
 
 /**
 * Gets all libraries belonging to a given user
@@ -31,10 +32,10 @@ export async function getProductLibrary(user_id: string, library_id: string): Pr
 * @param img_url An http/https url to an image resource which will be shown as the thumbnail for this library 
 * @returns all libraries
 */
-export async function createProductLibrary(user_id: string, library_name: string, img_url: string): Promise<void>
+export async function createProductLibrary(user_id: string, library_name: string): Promise<void>
 {
-	const result = await pool.query<ProductLibrary>('INSERT INTO librarydata (user_id, library_name, product_ids, image_url, date_added) VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)',
-													[user_id, library_name, JSON.stringify([]), img_url]
+	const result = await pool.query<ProductLibrary>('INSERT INTO librarydata (user_id, library_name, product_ids, date_added) VALUES($1, $2, $3, CURRENT_TIMESTAMP)',
+													[user_id, library_name, JSON.stringify([])]
 													);
 }
 
@@ -58,10 +59,23 @@ export async function deleteProductLibrary(user_id: string, library_id: string):
 */
 export async function addProductToProductLibrary(user_id: string, library_id: string, product_id: string): Promise<void>
 {
-	const result = await pool.query<ProductLibrary>(
-	'UPDATE librarydata SET product_ids = COALESCE(product_ids, \'[]\'::jsonb) || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
+	const insert_res = await pool.query<ProductLibrary>(
+	'UPDATE librarydata SET product_ids = COALESCE(product_ids, \'[]\'::jsonb) || (SELECT row_to_json(p_r) FROM (SELECT products.id AS product_id, products.name AS name, products.image_url AS image_url FROM products WHERE id = $1) AS p_r)::jsonb WHERE librarydata.user_id = $2 AND librarydata.id = $3;',
 	[product_id, user_id, library_id]
 	);
+	
+	const ingredients = await getProductIngredients(product_id);
+	
+	for(let i = 0; i < ingredients.length; i++)
+	{
+		const calculate_res = pool.query(
+			"INSERT INTO libraryingredients (library_id, ingredient_id, amount, unit)" +
+			"VALUES ($1, $2, $3, $4)" +
+			"ON CONFLICT (library_id, ingredient_id)" + 
+			"DO UPDATE SET amount = libraryingredients.amount + $3",
+			[library_id, ingredients[i].id, ingredients[i].amount, ingredients[i].unit]
+		);
+	}
 }
 
 /**
@@ -76,4 +90,17 @@ export async function removeProductFromProductLibrary(user_id: string, library_i
 	'UPDATE librarydata SET product_ids = (SELECT jsonb_agg_strict(filt) FROM jsonb_array_elements(librarydata.product_ids) AS filt WHERE filt->>\'product_id\' != $1) WHERE librarydata.user_id = $2 AND librarydata.id = $3',
 	[product_id, user_id, library_id]
 	);
+}
+
+/**
+* Collects all the ingredients from this library.
+*/
+export async function getProductLibrarySummary(user_id: string, library_id: string): Promise<IngredientEntry[]>
+{
+	const result = await pool.query<IngredientEntry>(
+		"SELECT ingredients.name, libi.ingredient_id, libi.amount, libi.unit FROM" +
+		"(SELECT * FROM libraryingredients WHERE library_id = $1) AS libi INNER JOIN ingredients ON libi.ingredient_id=ingredients.id",
+		[library_id]
+	);
+	return result.rows;
 }
