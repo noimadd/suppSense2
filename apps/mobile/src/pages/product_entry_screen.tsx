@@ -54,7 +54,6 @@ export default function ProductEntryScreen(props: ProductEntryProps)
         };
         
         const result = await createUserSubmittedProduct(props.session.accessToken, product_request);
-        console.log(result);
         
         if(result === null || result.success !== true)
         {

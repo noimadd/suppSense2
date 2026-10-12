@@ -22,8 +22,6 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
 {
     const [adding_product, setAddingProduct] = useState(false);
 
-    console.log(product);
-
     if(adding_product)
     {
         return(<ModalAddToLibrary isVisible={adding_product} product={product} libraries={null}

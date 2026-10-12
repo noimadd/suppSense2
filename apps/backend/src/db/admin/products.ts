@@ -123,7 +123,8 @@ async function findOrCreateIngredient(client: PoolClient, name: string): Promise
  */
 async function replaceProductIngredients(client: PoolClient, product_id: string, entries: AdminProductIngredientInput[]): Promise<void> {
     const ids: string[] = [];
-    const amounts: (string | null)[] = [];
+    const amounts: (number | null)[] = [];
+    const units: (string | null)[] = [];
 
     for (const entry of entries) {
         let id: string;
@@ -141,15 +142,16 @@ async function replaceProductIngredients(client: PoolClient, product_id: string,
             throw new HttpError(400, `The ingredient '${entry.name ?? entry.ingredient_id}' is listed more than once.`);
         }
         ids.push(id);
-        amounts.push(entry.amount?.trim() || null);
+        amounts.push(entry.amount || null);
+        units.push(entry.unit?.trim() || null);
     }
 
     await client.query('DELETE FROM productingredients WHERE product_id = $1', [product_id]);
     if (ids.length) {
         await client.query(
             `INSERT INTO productingredients (product_id, ingredient_id, amount)
-             SELECT $1, ingredient_id, amount FROM unnest($2::uuid[], $3::varchar[]) AS t(ingredient_id, amount)`,
-            [product_id, ids, amounts]
+             SELECT $1, ingredient_id, amount, unit FROM unnest($2::uuid[], $3::real[], $4::varchar[]) AS t(ingredient_id, amount, unit)`,
+            [product_id, ids, amounts, units]
         );
     }
 }

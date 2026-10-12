@@ -53,11 +53,15 @@ const isNonEmptyString = (v: unknown): v is string => typeof v === 'string' && v
  */
 function pickFields<T>(body: any, validators: Record<string, (v: unknown) => boolean>): T {
     const out: Record<string, unknown> = {};
-    for (const [field, isValid] of Object.entries(validators)) {
-        if (body?.[field] === undefined) { continue; }
-        if (!isValid(body[field])) {
+    for(const [field, isValid] of Object.entries(validators))
+    {
+        if(body?.[field] === undefined) { continue; }
+        
+        if(!isValid(body[field]))
+        {
             throw new HttpError(400, `Invalid value for '${field}'.`);
         }
+        
         out[field] = typeof body[field] === 'string' ? body[field].trim() : body[field];
     }
     return out as T;
@@ -68,7 +72,7 @@ function isIngredientList(v: unknown): boolean {
     return Array.isArray(v) && v.every((entry) =>
         entry && typeof entry === 'object' &&
         (isNonEmptyString(entry.ingredient_id) || isNonEmptyString(entry.name)) &&
-        (entry.amount === undefined || entry.amount === null || (isString(entry.amount) && entry.amount.length <= 50))
+        (entry.unit === undefined || entry.unit === null || (isString(entry.unit) && entry.amount.unit <= 50))
     );
 }
 

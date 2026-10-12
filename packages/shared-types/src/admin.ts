@@ -83,7 +83,8 @@ export type ProductStatus = 'pending' | 'approved';
 export interface AdminProductIngredient {
     ingredient_id: string;
     name: string;
-    amount: string | null;
+    amount: number;
+    unit: string;
     verified: boolean;
 }
 
@@ -109,7 +110,8 @@ export interface AdminProduct {
 export interface AdminProductIngredientInput {
     ingredient_id?: string;
     name?: string;
-    amount?: string | null;
+    amount?: number | null;
+    unit?: string | null;
 }
 
 /**

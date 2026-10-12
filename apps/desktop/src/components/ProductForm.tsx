@@ -9,7 +9,8 @@ interface IngredientRow {
     ingredient_id?: string;
     originalName?: string;
     name: string;
-    amount: string;
+    amount: number;
+    unit: string;
 }
 
 export interface ProductDraft {
@@ -33,7 +34,8 @@ export function draftFromProduct(product: AdminProduct): ProductDraft {
             ingredient_id: i.ingredient_id,
             originalName: i.name,
             name: i.name,
-            amount: i.amount ?? '',
+            amount: i.amount ?? 0,
+            unit: i.unit ?? '',
         })),
     };
 }
@@ -51,10 +53,11 @@ export function draftToPatch(draft: ProductDraft): AdminProductPatch {
         ingredients: draft.ingredients
             .filter((row) => row.name.trim())
             .map((row) => {
-                const amount = row.amount.trim() || null;
+                const amount = row.amount;
+                const unit = row.unit.trim() || null;
                 return row.ingredient_id && row.name.trim() === row.originalName
-                    ? { ingredient_id: row.ingredient_id, amount }
-                    : { name: row.name.trim(), amount };
+                    ? { ingredient_id: row.ingredient_id, amount: amount, unit: unit }
+                    : { name: row.name.trim(), amount: amount, unit: unit };
             }),
     };
 }
@@ -72,7 +75,7 @@ export function validateDraft(draft: ProductDraft): string | null {
         if (!name) { continue; }
         if (seen.has(name)) { return `"${row.name.trim()}" is listed more than once.`; }
         seen.add(name);
-        if (row.amount.length > 50) { return `The amount for "${row.name.trim()}" is too long (50 characters max).`; }
+        if (row.unit.length > 50) { return `The amount for "${row.name.trim()}" is too long (50 characters max).`; }
     }
     return null;
 }
@@ -145,10 +148,17 @@ export function ProductForm({ draft, onChange, disabled }: { draft: ProductDraft
                             />
                             <input
                                 aria-label={`Ingredient ${index + 1} amount`}
-                                placeholder="Amount, e.g. 5g"
+                                placeholder="Amount, e.g. 5"
                                 className="amount"
                                 value={row.amount}
                                 onChange={(e) => setRow(row.key, { amount: e.target.value })}
+                            />
+                            <input
+                                aria-label={`Ingredient ${index + 1} unit`}
+                                placeholder="Unit for the amount, e.g. g"
+                                className="unit"
+                                value={row.unit}
+                                onChange={(e) => setRow(row.key, { unit: e.target.value })}
                             />
                             <button
                                 type="button"
@@ -165,7 +175,7 @@ export function ProductForm({ draft, onChange, disabled }: { draft: ProductDraft
                 <button
                     type="button"
                     className="btn"
-                    onClick={() => set('ingredients', [...draft.ingredients, { key: nextKey++, name: '', amount: '' }])}
+                    onClick={() => set('ingredients', [...draft.ingredients, { key: nextKey++, name: '', amount: 0.0, unit: '' }])}
                 >
                     Add ingredient
                 </button>

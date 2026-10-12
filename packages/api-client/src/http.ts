@@ -75,7 +75,6 @@ export async function apiFetchWrapped<T>(path: string, options: RequestInit = {}
     }
     catch(err)
     {
-        console.log(err);
         return null;
     }
 }

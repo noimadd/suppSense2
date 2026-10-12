@@ -45,7 +45,6 @@ export async function getProduct(barcode: string, user_id: string): Promise<Prod
 		[barcode, user_id]
 	);
 	
-	console.log(result.rows[0]);
 	return result.rows[0] ?? null;
 }
 
