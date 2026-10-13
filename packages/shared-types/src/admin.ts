@@ -101,6 +101,7 @@ export interface AdminProduct {
     ingredients: AdminProductIngredient[];
     date_added: string;
     date_updated: string;
+    image_url: string | null;
 }
 
 /**
@@ -123,6 +124,7 @@ export interface AdminProductPatch {
     barcode?: string;
     description?: string;
     ingredients?: AdminProductIngredientInput[];
+    image_url?: string;
 }
 
 // ----------------------- ingredients -----------------------

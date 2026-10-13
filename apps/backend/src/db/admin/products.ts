@@ -4,7 +4,7 @@ import { Paginated, HttpError, likePattern, buildSetClause } from './util';
 import type { ProductStatus, AdminProduct, AdminProductIngredientInput, AdminProductPatch } from '@suppsense/shared-types/';
 export type { ProductStatus, AdminProduct, AdminProductPatch };
 
-const EDITABLE_PRODUCT_COLUMNS = ['name', 'brand', 'barcode', 'description'] as const;
+const EDITABLE_PRODUCT_COLUMNS = ['name', 'brand', 'barcode', 'description', 'image_url'] as const;
 
 const PRODUCT_SELECT = `
     SELECT p.*,
@@ -18,6 +18,7 @@ const PRODUCT_SELECT = `
                    'ingredient_id', i.id,
                    'name', i.name,
                    'amount', pi.amount,
+                   'unit', pi.unit,
                    'verified', i.verified
                ) ORDER BY i.name) AS list
         FROM productingredients pi

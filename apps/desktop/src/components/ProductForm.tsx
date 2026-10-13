@@ -19,6 +19,7 @@ export interface ProductDraft {
     barcode: string;
     description: string;
     ingredients: IngredientRow[];
+    image_url: string;
 }
 
 let nextKey = 1;
@@ -37,6 +38,7 @@ export function draftFromProduct(product: AdminProduct): ProductDraft {
             amount: i.amount ?? 0,
             unit: i.unit ?? '',
         })),
+        image_url: product.image_url,
     };
 }
 
@@ -59,6 +61,7 @@ export function draftToPatch(draft: ProductDraft): AdminProductPatch {
                     ? { ingredient_id: row.ingredient_id, amount: amount, unit: unit }
                     : { name: row.name.trim(), amount: amount, unit: unit };
             }),
+        image_url: draft.image_url.trim(),
     };
 }
 
@@ -121,7 +124,12 @@ export function ProductForm({ draft, onChange, disabled }: { draft: ProductDraft
                     />
                 </div>
             </div>
-
+            
+            <div className="field">
+                <label htmlFor={`${ids}-image`}>Thumbnail URL</label>
+                <input id={`${ids}-image`} value={draft.image_url} onChange={(e) => set('image_url', e.target.value)} />
+            </div>
+            
             <div className="field">
                 <label htmlFor={`${ids}-desc`}>Description</label>
                 <textarea id={`${ids}-desc`} rows={2} value={draft.description} onChange={(e) => set('description', e.target.value)} />
