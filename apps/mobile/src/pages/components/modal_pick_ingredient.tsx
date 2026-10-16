@@ -20,6 +20,8 @@ import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import { IngredientSearchResult, IngredientEntry } from '@suppsense/shared-types';
 import { searchIngredients } from '@suppsense/api-client';
 
+import { colors } from './colors'
+
 interface PickIngredientProps
 {
     isVisible: boolean;
@@ -188,7 +190,7 @@ export default function ModalPickIngredient(props: PickIngredientProps)
 
 const styles = StyleSheet.create({
     centeredView: {
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -197,24 +199,24 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     page_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent'
     },
     input: {
         width: '100%',
         height: 50,
-        borderColor: '#ccc',
+        borderColor: colors.txt,
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
@@ -224,18 +226,18 @@ const styles = StyleSheet.create({
         width: '100%', 
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disable_button_bg,
     },
     cancelButton: {
-        backgroundColor: '#FFaaaa',
+        backgroundColor: colors.cancel_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     row_title: {
-        color: '#FFFFFF',
+        color: colors.button_txt,
         fontSize: 18,
         backgroundColor: 'transparent',
         marginBottom: 1,
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         width: '100%',
-        backgroundColor: '#6c6c6c',
+        backgroundColor: colors.disabled_button_bg,
         marginBottom: 1,
         marginTop: 1,
         justifyContent: 'center',
@@ -255,16 +257,16 @@ const styles = StyleSheet.create({
     picker: {
         width: 90,
         borderWidth: 1,
-        borderColor: "#666",
+        borderColor: colors.txt,
         height: '100%',
         marginLeft: 'auto',
-        color: '#fff',
+        color: colors.button_txt,
     },
     amount_entry_row: {
         height: 60,
         borderRadius: 10,
         width: '90%',
-        backgroundColor: '#6c6c6c',
+        backgroundColor: colors.disabled_button_bg,
         marginBottom: 1,
         marginTop: 1,
         flexDirection: 'row',
@@ -274,6 +276,6 @@ const styles = StyleSheet.create({
     amount_input: {
         width: 80,
         height: '100%',
-        color: '#fff',
+        color: colors.button_txt,
     },
 })

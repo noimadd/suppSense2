@@ -38,10 +38,13 @@ export default function ProductEntryScreen(props: ProductEntryProps)
     const [product_name, setProductName] = useState('');
     const [image_url, setImageUrl] = useState('');
     const [barcode, setBarcode] = useState(props.barcode);
+    const [brand, setBrand] = useState('');
+    const [description, setDescription] = useState('');
     const [ingredients, setIngredients] = useState<IngredientEntry[]>([]);
     const [entry_state, setEntryState] = useState(ProductEntryState.BEFORE);
 
-    const canSubmit = product_name.trim().length > 5 && barcode.trim().length > 0 && ingredients.length > 0 && image_url.trim().length > 0;
+    const canSubmit = product_name.trim().length > 5 && barcode.trim().length > 0 && ingredients.length > 0 && image_url.trim().length > 0
+                        brand.trim().length > 5 && description.trim().length > 5;
 
     const handleSubmit = async () => {
         if (!canSubmit) return;        
@@ -50,8 +53,8 @@ export default function ProductEntryScreen(props: ProductEntryProps)
         const product_request = {
             "barcode": barcode,
             "name": product_name,
-            "brand": 'Fortnite.com',
-            "description": 'This rocks fr',
+            "brand": brand,
+            "description": description,
             "ingredients": ingredients,
             "image_url": image_url,
         };
@@ -154,6 +157,24 @@ export default function ProductEntryScreen(props: ProductEntryProps)
                 onChangeText={setProductName}
                 keyboardType="default"
             />
+
+            <TextInput
+                style={styles.input}
+                placeholder="Product Brand"
+                placeholderTextColor="#888"
+                value={brand}
+                autoCapitalize="none"
+                onChangeText={setBrand}
+                keyboardType="default"
+            />
+
+            <TextInput
+              style={styles.description_input}
+              value={description}
+              onChangeText={setDescription}
+              multiline={true}
+              placeholder="Description"
+            />
             
             <TextInput
                 style={styles.input}
@@ -233,6 +254,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         color: colors.txt,
     },
+    description_input: {
+        width: '100%',
+        height: 'auto',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 15,
+        color: colors.txt,
+        numberOfLines: 10,
+    },
     button: {
         width: '100%',
         height: 50,
@@ -263,7 +295,7 @@ const styles = StyleSheet.create({
     ingredient_list_row: {
         height: 50,
         width: '100%',
-        backgroundColor: '#6c6c6c',
+        backgroundColor: colors.disabled_button_bg,
         padding: 10,
         borderRadius: 10,
         marginBottom: 5,
@@ -280,6 +312,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
+        backgroundColor: colors.button_bg,
     },
     ingredient_list_text: {
         color: colors.button_txt,
@@ -288,12 +321,17 @@ const styles = StyleSheet.create({
     },
     ingredient_list_amount: {
         marginLeft: 'auto',
-        color: colors.txt,
+        color: colors.button_txt,
         fontSize: 13,
         fontWeight: 'bold',
     },
     ingredient_header_text: {
         color: colors.button_txt,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    description_text: {
+        color: colors.txt,
         fontSize: 16,
         fontWeight: 'bold',
     },

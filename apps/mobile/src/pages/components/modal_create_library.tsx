@@ -18,6 +18,8 @@ import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 import { create_user_library } from '@suppsense/api-client';
 
+import { colors } from './colors'
+
 interface CreateLibraryProps
 {
     isVisible: boolean;
@@ -118,7 +120,7 @@ export default function ModalCreateLibrary(props: CreateLibraryProps)
 
 const styles = StyleSheet.create({
     centeredView: {
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -127,37 +129,37 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     page_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent'
     },
     input: {
         width: '100%',
         height: 50,
-        borderColor: '#ccc',
+        borderColor: colors.txt,
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginTop: 10,
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disabled_button_bg,
     },
     cancelButton: {
-        backgroundColor: '#ffaaaa',
+        backgroundColor: colors.cancel_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
