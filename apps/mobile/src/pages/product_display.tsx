@@ -1,10 +1,12 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getProductResponse } from '@suppsense/shared-types';
 import plus_sign_light from '../../assets/plus_sign_light.png';
 import ModalAddToLibrary from './components/modal_add_to_library'
+
+import { colors } from './components/colors'
 
 interface IngredientsScreenProps {
     product: getProductResponse;
@@ -32,7 +34,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={{justifyContent: 'flex-start'}}>
             {/* return to barcode entry screen */}
             <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Text style={styles.backButtonText}>{'< Back'}</Text>
@@ -51,7 +53,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
             <Image source={{ uri: product.image_url }} style={styles.product_thumbnail}/>
 
             <Text style={styles.sectionTitle}>Ingredients</Text>
-            <View>
+            <View style={{marginBottom: 20}}>
                 {product.ingredients.map((item, idx) => (
                     <TouchableOpacity 
                         key={`${item.name}-${idx}`} 
@@ -63,7 +65,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
                     </TouchableOpacity>
                 ))}
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
@@ -71,32 +73,31 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         padding: 20,
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
         flex: 1,
-        justifyContent: 'flex-start',
     },
     backButton: {
         marginBottom: 15,
     },
     backButtonText: {
-        color: '#0f62fe',
+        color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     productName: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#fff',
+        color: colors.txt,
     },
     productDescription: {
         fontSize: 14,
-        color: '#ccc',
+        color: colors.txt,
         marginBottom: 15,
     },
     sectionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#fff',
+        color: colors.txt,
         marginBottom: 8,
     },
     ingredientRow: {
@@ -105,16 +106,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 14,
         paddingHorizontal: 12,
-        borderBottomColor: '#333',
+        borderBottomColor: colors.txt,
         borderBottomWidth: 1,
     },
     ingredientName: {
-        color: '#fff',
+        color: colors.txt,
         fontSize: 16,
         fontWeight: '600',
     },
     ingredientAmount: {
-        color: '#aaa',
+        color: colors.txt,
         fontSize: 15,
     },
     page_header: {
@@ -123,11 +124,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         width: '100%',
         marginBottom: 10,
-        color: '#FF0000',
     },
     add_to_library_button :
     {
-        backgroundColor: '#0000FF',
+        backgroundColor: colors.button_bg,
         borderRadius: 10,
         width: 30,
         height: 30,

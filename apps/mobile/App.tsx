@@ -11,6 +11,8 @@ import LibrariesScreen from './src/pages/libraries_screen';
 import TopBar from './src/pages/components/top_bar';
 import SideMenu from './src/pages/components/side_menu';
 
+import { colors } from './src/pages/components/colors';
+
 // Auth
 import LoginScreen from './src/pages/auth/login_screen';
 import SignupScreen from './src/pages/auth/signup_screen';
@@ -118,7 +120,7 @@ function AppContent() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0f0f12',
+    backgroundColor: colors.bg,
   },
   content: {
     flex: 1,

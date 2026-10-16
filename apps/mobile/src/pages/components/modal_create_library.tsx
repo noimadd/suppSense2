@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#555',
     },
     cancelButton: {
-        backgroundColor: '#FFaaaa',
+        backgroundColor: '#ffaaaa',
     },
     buttonText: {
         color: '#fff',

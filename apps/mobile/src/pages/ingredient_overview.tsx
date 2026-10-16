@@ -3,6 +3,8 @@ import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, Lin
 import { getIngredientByName } from '@suppsense/api-client';
 import { getIngredientResponse } from '@suppsense/shared-types';
 
+import { colors } from './components/colors';
+
 interface IngredientOverviewProps {
     ingredientName: string;
     onBack: () => void;
@@ -98,7 +100,7 @@ export default function IngredientOverview({ ingredientName, onBack }: Ingredien
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
     },
     content: {
         padding: 20,
@@ -107,12 +109,12 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     backButtonText: {
-        color: '#0f62fe',
+        color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     error: {
-        color: 'red',
+        color: colors.error_txt,
         marginTop: 20,
     },
     image: {
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#fff',
+        color: colors.txt,
     },
     badge: {
         fontSize: 12,
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
     },
     description: {
         fontSize: 15,
-        color: '#ccc',
+        color: colors.txt,
         marginBottom: 20,
         lineHeight: 21,
         marginTop: 15,
@@ -163,11 +165,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     dosageLabel: {
-        color: '#aaa',
+        color: colors.txt,
         fontSize: 14,
     },
     dosageValue: {
-        color: '#fff',
+        color: colors.txt,
         fontSize: 14,
         fontWeight: '600',
     },

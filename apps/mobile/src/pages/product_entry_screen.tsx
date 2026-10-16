@@ -16,6 +16,8 @@ import { IngredientEntry, createProductRequest } from '@suppsense/shared-types';
 import { createUserSubmittedProduct } from '@suppsense/api-client';
 import ModalPickIngredient from './components/modal_pick_ingredient';
 
+import { colors } from './components/colors';
+
 interface ProductEntryProps
 {
     session: StoredSession;
@@ -34,11 +36,12 @@ enum ProductEntryState
 export default function ProductEntryScreen(props: ProductEntryProps)
 {
     const [product_name, setProductName] = useState('');
+    const [image_url, setImageUrl] = useState('');
     const [barcode, setBarcode] = useState(props.barcode);
     const [ingredients, setIngredients] = useState<IngredientEntry[]>([]);
     const [entry_state, setEntryState] = useState(ProductEntryState.BEFORE);
 
-    const canSubmit = product_name.trim().length > 5 && barcode.trim().length > 0 && ingredients.length > 0;
+    const canSubmit = product_name.trim().length > 5 && barcode.trim().length > 0 && ingredients.length > 0 && image_url.trim().length > 0;
 
     const handleSubmit = async () => {
         if (!canSubmit) return;        
@@ -50,7 +53,7 @@ export default function ProductEntryScreen(props: ProductEntryProps)
             "brand": 'Fortnite.com',
             "description": 'This rocks fr',
             "ingredients": ingredients,
-            "image_url": "https://m.media-amazon.com/images/I/71-lmdLaYmL._AC_SY300_SX300_QL70_FMwebp_.jpg",
+            "image_url": image_url,
         };
         
         const result = await createUserSubmittedProduct(props.session.accessToken, product_request);
@@ -159,6 +162,16 @@ export default function ProductEntryScreen(props: ProductEntryProps)
                 value={barcode}
                 autoCapitalize="none"
                 onChangeText={setBarcode}
+                keyboardType="number-pad"
+            />
+            
+            <TextInput
+                style={styles.input}
+                placeholder="Thumbnail URL"
+                placeholderTextColor="#888"
+                value={image_url}
+                autoCapitalize="none"
+                onChangeText={setImageUrl}
                 keyboardType="default"
             />
             
@@ -195,20 +208,20 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         padding: 10,
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#fff',
+        color: colors.txt,
     },
     subtitle: {
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 2,
         marginBottom: 2,
-        color: '#fff',
+        color: colors.txt,
     },
     input: {
         width: '100%',
@@ -218,27 +231,27 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginTop: 1,
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disabled_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     error: {
-        color: 'red',
+        color: colors.error_txt,
         marginBottom: 15,
     },
     ingredient_list: {
@@ -261,7 +274,6 @@ const styles = StyleSheet.create({
     ingredient_header_row: {
         height: 50,
         width: '100%',
-        backgroundColor: '#0f62fe',
         padding: 10,
         borderRadius: 10,
         marginBottom: 5,
@@ -270,18 +282,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     ingredient_list_text: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     ingredient_list_amount: {
         marginLeft: 'auto',
-        color: '#fff',
+        color: colors.txt,
         fontSize: 13,
         fontWeight: 'bold',
     },
     ingredient_header_text: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },

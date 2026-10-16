@@ -20,7 +20,10 @@ import { StoredSession } from '../auth/auth';
 import LibraryScreen from './library_screen';
 import ProductDisplay from './product_display';
 import IngredientOverview from './ingredient_overview';
+
 import ModalCreateLibrary from './components/modal_create_library';
+import { colors } from './components/colors';
+
 import plus_sign_light from '../../assets/plus_sign_light.png';
 
 interface LibrariesProps
@@ -191,15 +194,15 @@ const styles = StyleSheet.create({
     outer_div: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#0f0f12',
+        backgroundColor: colors.bg,
     },
     text: {
-        color: '#000',
+        color: colors.txt,
         fontSize: 15,
         fontWeight: '600'
     },
     backButtonText: {
-        color: '#0f62fe',
+        color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -207,7 +210,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     row_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 18,
         backgroundColor: 'transparent',
         marginBottom: 1,
@@ -216,20 +219,20 @@ const styles = StyleSheet.create({
     row_container: {
         height: 140,
         width: 140,
-        backgroundColor: '#606060',
+        backgroundColor: colors.disabled_button_bg,
         borderRadius: 10,
         marginLeft: 10,
         overflow: 'hidden',
     },
     product_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 18,
         backgroundColor: 'transparent',
         marginTop: 'auto',
         marginBottom: 1,
     },
     page_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent'
     },
@@ -241,12 +244,12 @@ const styles = StyleSheet.create({
     },
     add_library_button:
     {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent',
         marginLeft: 10,
         borderRadius: 10,
-        backgroundColor: '#0000FF',
+        backgroundColor: colors.button_bg,
         height: 30,
         width: 30,
         padding: 0,
@@ -257,7 +260,7 @@ const styles = StyleSheet.create({
     row_header: {
         height: 140,
         width: 50,
-        backgroundColor: '#0000FF',
+        backgroundColor: colors.button_bg,
         borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'center',
