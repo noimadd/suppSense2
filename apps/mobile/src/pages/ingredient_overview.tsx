@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 15,
         backgroundColor: '#1a1a1e',
+        resizeMode: 'contain',
     },
     titleRow: {
         flexDirection: 'row',

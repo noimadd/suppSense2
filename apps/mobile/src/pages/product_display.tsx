@@ -41,7 +41,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
             </TouchableOpacity>            
             
             <View style={styles.page_header}>
-                <View>
+                <View style={styles.productTitleContainer}>
                     <Text style={styles.productName}>{product.name}</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
                 </View>
@@ -83,6 +83,9 @@ const styles = StyleSheet.create({
         color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    productTitleContainer: {
+        maxWidth: '80%',
     },
     productName: {
         fontSize: 20,
@@ -146,5 +149,6 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
         borderRadius: 10,
         marginBottom: 10,
+        resizeMode: 'contain',
     },
 });
