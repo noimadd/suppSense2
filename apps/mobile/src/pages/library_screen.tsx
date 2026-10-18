@@ -19,6 +19,8 @@ import { ProductLibrary, IngredientEntry } from '@suppsense/shared-types';
 import { get_user_library, get_product_library_summary, getProductById } from '@suppsense/api-client';
 import plus_sign_light from '../../assets/plus_sign_light.png';
 
+import { colors } from './components/colors'
+
 interface LibraryProps
 {
     onExit: () => void;
@@ -174,7 +176,7 @@ export default function LibraryScreen(props: LibraryProps)
 
 const styles = StyleSheet.create({
     backButtonText: {
-        color: '#0f62fe',
+        color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -184,15 +186,15 @@ const styles = StyleSheet.create({
     outer_div: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#0f0f12',
+        backgroundColor: colors.bg,
     },
     text: {
-        color: '#000',
+        color: colors.txt,
         fontSize: 15,
         fontWeight: '600'
     },
     row_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 18,
         backgroundColor: 'transparent',
         marginBottom: 1,
@@ -201,7 +203,7 @@ const styles = StyleSheet.create({
     row_container: {
         height: 130,
         width: '90%',
-        backgroundColor: '#606060',
+        backgroundColor: colors.bg_2,
         borderRadius: 10,
         marginLeft: '5%',
         marginRight: '5%',
@@ -220,12 +222,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     ingredient_name: {
-        color: '#fff',
+        color: colors.txt,
         fontSize: 14,
         fontWeight: '600',
     },
     ingredient_amount: {
-        color: '#aaa',
+        color: colors.txt,
         fontSize: 15,
     },
     product_thumbnail: {
@@ -235,19 +237,19 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     page_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent',
     },
     section_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 18,
         backgroundColor: 'transparent',
         marginTop: 10,
     },
     add_product_button :
     {
-        backgroundColor: '#0000FF',
+        backgroundColor: colors.button_bg,
         borderRadius: 10,
         width: '90%',
         height: 50,

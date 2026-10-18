@@ -91,6 +91,7 @@ const PRODUCT_PATCH_FIELDS = {
     barcode: (v: unknown) => isString(v) && /^\d{1,30}$/.test(v.trim()),
     description: isString,
     ingredients: isIngredientList,
+    image_url: (v: unknown) => v === null || isString(v),
 };
 
 const INGREDIENT_PATCH_FIELDS = {

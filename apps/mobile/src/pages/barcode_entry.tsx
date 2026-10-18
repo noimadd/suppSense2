@@ -14,6 +14,7 @@ import { getProductByBarcode } from '@suppsense/api-client';
 import { getProductResponse } from '@suppsense/shared-types';
 import { StoredSession } from '../auth/auth';
 
+import { colors } from './components/colors';
 
 import ProductDisplay from './product_display';
 import IngredientOverview from './ingredient_overview';
@@ -169,19 +170,18 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
     },
     cameraContainer: {
         width: '100%',
         height: '100%',
         alignItems: 'center',
-        backgroundColor: '#0f0f0f',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#fff',
+        color: colors.txt,
     },
     orText: {
         color: '#888',
@@ -196,26 +196,26 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disabled_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     error: {
-        color: 'red',
+        color: colors.error_txt,
         marginBottom: 15,
     },
     buttonContainer: {
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     backButtonText: {
-        color: '#0f62fe',
+        color: colors.back_button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },

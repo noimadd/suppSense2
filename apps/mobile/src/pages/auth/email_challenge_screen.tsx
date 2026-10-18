@@ -12,6 +12,8 @@ import {
 import Toast from 'react-native-toast-message';
 import { complete_email_verify_challenge, email_verify_challenge } from '@suppsense/api-client';
 
+import { colors } from '../components/colors';
+
 interface EmailChallengeScreenProps {
     onChallengeComplete : () => void;
     onChallengeExit : () => void;
@@ -178,20 +180,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#fff',
+        color: colors.txt,
     },
     subtitle: {
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 2,
         marginBottom: 2,
-        color: '#fff',
+        color: colors.txt,
     },
     input: {
         width: '100%',
@@ -201,22 +203,22 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginTop: 3,
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disabled_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },

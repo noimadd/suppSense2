@@ -19,6 +19,8 @@ import { get_user_libraries, add_product_to_user_library } from '@suppsense/api-
 
 import { getProductResponse, ProductLibrary } from '@suppsense/shared-types';
 
+import { colors } from './colors'
+
 interface AddToLibraryProps
 {
     isVisible: boolean;
@@ -130,7 +132,7 @@ export default function ModalAddToLibrary(props: AddToLibraryProps)
 
 const styles = StyleSheet.create({
     centeredView: {
-        backgroundColor: '#0f0f0f',
+        backgroundColor: colors.bg,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -139,44 +141,44 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     page_title: {
-        color: '#FFFFFF',
+        color: colors.txt,
         fontSize: 30,
         backgroundColor: 'transparent'
     },
     input: {
         width: '100%',
         height: 50,
-        borderColor: '#ccc',
+        borderColor: colors.txt,
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
-        color: '#fff',
+        color: colors.txt,
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0f62fe',
+        backgroundColor: colors.button_bg,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginTop: 10,
     },
     buttonDisabled: {
-        backgroundColor: '#555',
+        backgroundColor: colors.disable_button_bg,
     },
     cancelButton: {
-        backgroundColor: '#FFaaaa',
+        backgroundColor: colors.cancel_button_bg,
     },
     buttonText: {
-        color: '#fff',
+        color: colors.button_txt,
         fontSize: 16,
         fontWeight: 'bold',
     },
     library_row: {
         height: 50,
         width: '100%',
-        backgroundColor: '#6c6c6c',
+        backgroundColor: colors.disabled_button_bg,
         padding: 10,
         borderRadius: 10,
         marginBottom: 5,
@@ -185,11 +187,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     library_row_text: {
-        color: '#FFFFFF',
+        color: colors.button_txt,
         fontSize: 18,
     },
     selected_library_row: {
-        backgroundColor: '#9c9c9c'
+        backgroundColor: colors.button_bg,
     },
     library_list: {
         width: '90%',

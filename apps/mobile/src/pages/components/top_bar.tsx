@@ -1,6 +1,12 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+
+import unirec_logo from '../../../assets/unirec_portrait_orange.png';
+
+import { colors } from './colors'
 
 interface TopBarProps {
     onMenuPress: () => void;
@@ -20,6 +26,7 @@ export default function TopBar({ onMenuPress, onProfilePress }: TopBarProps) {
 
     return (
         <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
+            <StatusBar style="light" />
             {/* burger menu button */}
             <TouchableOpacity style={styles.burgerIcon} onPress={onMenuPress} hitSlop={10}>
                 <View style={styles.burgerBar} />
@@ -29,7 +36,7 @@ export default function TopBar({ onMenuPress, onProfilePress }: TopBarProps) {
 
             {/* profile button - blue circular placeholder for now to be updated to the users pfp */}
             <TouchableOpacity onPress={onProfilePress} hitSlop={10}>
-                <View style={styles.profileCircle} />
+                <Image source={unirec_logo} style={styles.profileCircle} />
             </TouchableOpacity>
         </View>
     );
@@ -42,7 +49,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingBottom: 12,
-        backgroundColor: 'grey',
+        backgroundColor: colors.top_bar_bg,
     },
     burgerIcon: {
         justifyContent: 'center',
@@ -55,9 +62,8 @@ const styles = StyleSheet.create({
         borderRadius: 1,
     },
     profileCircle: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'blue',
+        width: 50,
+        height: 50,
+        resizeMode: 'contain',
     },
 });

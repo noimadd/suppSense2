@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { colors } from './colors';
+
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.7; // covers 70% of the screen from left -> right
 
 interface SideMenuItem {
@@ -79,13 +81,13 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: -1,
         width: DRAWER_WIDTH,
-        backgroundColor: '#1a1a1e',
+        backgroundColor: colors.bg,
         paddingHorizontal: 20,
         borderRightWidth: 1,
-        borderRightColor: '#fff',
+        borderRightColor: colors.txt,
     },
     title: {
-        color: '#fff',
+        color: colors.txt,
         fontSize: 18,
         fontWeight: 'bold',
     },    
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
     },
     menuItemLabel: {
-        color: '#fff',
+        color: colors.txt,
         fontSize: 16,
     },
 });
