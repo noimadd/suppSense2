@@ -34,7 +34,7 @@ export default function ProductDisplay({ product, onBack, onIngredientPress, onR
     }
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={{justifyContent: 'flex-start'}}>
+        <ScrollView style={styles.container} contentContainerStyle={{justifyContent: 'flex-start', paddingBottom: 10}}>
             {/* return to barcode entry screen */}
             <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <Text style={styles.backButtonText}>{'< Back'}</Text>

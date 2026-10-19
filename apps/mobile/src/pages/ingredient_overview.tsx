@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         height: 180,
         borderRadius: 8,
         marginBottom: 15,
-        backgroundColor: '#1a1a1e',
+        backgroundColor: 'transparent',
         resizeMode: 'contain',
     },
     titleRow: {
