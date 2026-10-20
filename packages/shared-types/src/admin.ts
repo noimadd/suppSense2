@@ -174,4 +174,5 @@ export interface IngredientSummaryRequest {
 
 export interface IngredientSummaryResponse {
     summary: string;
+    source_url: string | null;
 }

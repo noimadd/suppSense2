@@ -68,12 +68,13 @@ function pickFields<T>(body: any, validators: Record<string, (v: unknown) => boo
     return out as T;
 }
 
-// Each entry needs an ingredient_id (link an existing ingredient) or a name (find or create one by name)
+// Each entry needs an ingredient_id (link an existing ingredient) or a name (find or create one by name).
+// An amount of 0 is allowed for label ingredients with no stated amount (flavours, sweeteners and so on).
 function isIngredientList(v: unknown): boolean {
     return Array.isArray(v) && v.every((entry) =>
         entry && typeof entry === 'object' &&
         (isNonEmptyString(entry.ingredient_id) || isNonEmptyString(entry.name)) &&
-        (isNonEmptyString(entry.unit) && entry.unit.length < 50 && entry.amount !== undefined && entry.amount > 0)
+        (isNonEmptyString(entry.unit) && entry.unit.length < 50 && entry.amount !== undefined && entry.amount !== null && Number(entry.amount) >= 0)
     );
 }
 
@@ -284,7 +285,8 @@ router.patch('/ingredients/:id', async (req, res) => {
 });
 
 // body (optional): name, recommended_dosage, maximum_dosage, paper_url - unsaved values from the form.
-// Returns { summary } without saving it, so the admin can review it before saving and verifying.
+// Returns { summary, source_url } without saving, so the admin can review before saving and verifying.
+// source_url is only suggested when the ingredient has no source yet, and only if it checks out (see ai/ingredient_summary.ts).
 router.post('/ingredients/:id/summary', async (req, res) => {
     const ingredient = await getIngredientById(req.params.id);
     if (!ingredient) { return notFound(res, 'Ingredient'); }
@@ -296,13 +298,13 @@ router.post('/ingredients/:id/summary', async (req, res) => {
         paper_url: isString,
     });
 
-    const summary = await generateIngredientSummary({
+    const result = await generateIngredientSummary({
         name: overrides.name ?? ingredient.name,
         recommended_dosage: overrides.recommended_dosage ?? ingredient.recommended_dosage,
         maximum_dosage: overrides.maximum_dosage ?? ingredient.maximum_dosage,
         paper_url: overrides.paper_url ?? ingredient.paper_url,
     });
-    res.json({ summary });
+    res.json(result);
 });
 
 // body: { password } - the admin's own password, to confirm. Removes the ingredient from every product that lists it.

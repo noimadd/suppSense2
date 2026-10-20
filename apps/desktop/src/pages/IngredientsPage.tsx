@@ -153,7 +153,7 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
     const [error, setError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [generating, setGenerating] = useState(false);
-    const [generated, setGenerated] = useState(false);
+    const [generated, setGenerated] = useState<null | 'with-source' | 'no-source' | 'kept-source'>(null);
 
     const original = formFrom(ingredient);
     const changed = (Object.keys(form) as (keyof typeof form)[]).filter((k) => form[k] !== original[k]);
@@ -170,15 +170,16 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
         setGenerating(true);
         setError(null);
         try {
-            const { summary } = await request(() => generateAdminIngredientSummary(ingredient.id, {
+            const { summary, source_url } = await request(() => generateAdminIngredientSummary(ingredient.id, {
                 name: form.name.trim(),
                 recommended_dosage: form.recommended_dosage.trim(),
                 maximum_dosage: form.maximum_dosage.trim(),
                 paper_url: form.paper_url.trim(),
             }));
-            // a fresh AI draft hasn't been checked by a person yet
-            setForm((f) => ({ ...f, description: summary, verified: false }));
-            setGenerated(true);
+            const hadSource = !!form.paper_url.trim();
+            // a fresh AI draft hasn't been checked by a person yet. Never overwrite a source the admin already has.
+            setForm((f) => ({ ...f, description: summary, verified: false, paper_url: hadSource ? f.paper_url : (source_url ?? '') }));
+            setGenerated(hadSource ? 'kept-source' : source_url ? 'with-source' : 'no-source');
         } catch (err) {
             setError(errorMessage(err));
         } finally {
@@ -198,7 +199,7 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
         try {
             const updated = await request(() => updateAdminIngredient(ingredient.id, patch));
             setForm(formFrom(updated));
-            setGenerated(false);
+            setGenerated(null);
             onSaved(updated);
         } catch (err) {
             setError(errorMessage(err));
@@ -233,9 +234,10 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
                         </button>
                     </div>
                     <textarea id="ing-desc" rows={10} value={form.description} onChange={(e) => set('description', e.target.value)} disabled={generating} />
-                    {generated
-                        ? <p className="hint hint-ai">AI draft. Check it against the source, edit if needed, save, then mark it as human verified.</p>
-                        : <p className="hint">Shown to users on the ingredient screen. Check it against the source before marking it verified.</p>}
+                    {generated === 'with-source' && <p className="hint hint-ai">AI draft with a suggested source (filled in below). Open the source, check the summary against it, then save and mark it as human verified.</p>}
+                    {generated === 'kept-source' && <p className="hint hint-ai">AI draft. Check it against the existing source below, then save and mark it as human verified.</p>}
+                    {generated === 'no-source' && <p className="hint hint-ai">AI draft. No source could be verified automatically, so add one below before marking it as human verified.</p>}
+                    {!generated && <p className="hint">Shown to users on the ingredient screen. Check it against the source before marking it verified.</p>}
                 </div>
                 <div className="field-grid">
                     <div className="field">
@@ -269,7 +271,7 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
 
             <div className="detail-actions">
                 <button type="button" className="btn btn-danger-outline btn-push-left" onClick={() => setDeleting(true)} disabled={busy}>Delete</button>
-                <button type="button" className="btn" onClick={() => { setForm(formFrom(ingredient)); setError(null); setGenerated(false); }} disabled={busy || !dirty}>Discard changes</button>
+                <button type="button" className="btn" onClick={() => { setForm(formFrom(ingredient)); setError(null); setGenerated(null); }} disabled={busy || !dirty}>Discard changes</button>
                 <button type="submit" className="btn btn-primary" disabled={busy || !dirty}>{busy ? 'Saving…' : 'Save changes'}</button>
             </div>
         </form>
