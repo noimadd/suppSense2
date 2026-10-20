@@ -160,3 +160,18 @@ export interface AdminIngredientCreate extends AdminIngredientPatch {
 export interface AdminIngredientListQuery extends AdminListQuery {
     verified?: boolean;
 }
+// ----------------------- AI ingredient summaries -----------------------
+
+/**
+ * What the summary is generated from. Sent from the form so unsaved edits are used.
+ */
+export interface IngredientSummaryRequest {
+    name: string;
+    recommended_dosage?: string | null;
+    maximum_dosage?: string | null;
+    paper_url?: string | null;
+}
+
+export interface IngredientSummaryResponse {
+    summary: string;
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { createAdminIngredient, deleteAdminIngredient, listAdminIngredients, updateAdminIngredient } from '@suppsense/api-client';
+import { createAdminIngredient, deleteAdminIngredient, generateAdminIngredientSummary, listAdminIngredients, updateAdminIngredient } from '@suppsense/api-client';
 import type { AdminIngredient, AdminIngredientPatch } from '@suppsense/shared-types';
 import { request } from '../lib/session';
 import { useDebounced, useLoad } from '../lib/useLoad';
@@ -152,6 +152,8 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [generating, setGenerating] = useState(false);
+    const [generated, setGenerated] = useState(false);
 
     const original = formFrom(ingredient);
     const changed = (Object.keys(form) as (keyof typeof form)[]).filter((k) => form[k] !== original[k]);
@@ -160,6 +162,29 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
     useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
 
     const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => setForm((f) => ({ ...f, [key]: value }));
+
+    /** fills the summary with an AI draft. Nothing is saved until the admin clicks Save changes. */
+    async function generateSummary() {
+        if (!form.name.trim()) { setError('Give the ingredient a name first.'); return; }
+        if (form.description.trim() && !window.confirm('Replace the current summary with a new AI-generated one?')) { return; }
+        setGenerating(true);
+        setError(null);
+        try {
+            const { summary } = await request(() => generateAdminIngredientSummary(ingredient.id, {
+                name: form.name.trim(),
+                recommended_dosage: form.recommended_dosage.trim(),
+                maximum_dosage: form.maximum_dosage.trim(),
+                paper_url: form.paper_url.trim(),
+            }));
+            // a fresh AI draft hasn't been checked by a person yet
+            setForm((f) => ({ ...f, description: summary, verified: false }));
+            setGenerated(true);
+        } catch (err) {
+            setError(errorMessage(err));
+        } finally {
+            setGenerating(false);
+        }
+    }
 
     async function save(e: React.FormEvent) {
         e.preventDefault();
@@ -173,6 +198,7 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
         try {
             const updated = await request(() => updateAdminIngredient(ingredient.id, patch));
             setForm(formFrom(updated));
+            setGenerated(false);
             onSaved(updated);
         } catch (err) {
             setError(errorMessage(err));
@@ -200,9 +226,16 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
                     <input id="ing-name" value={form.name} onChange={(e) => set('name', e.target.value)} />
                 </div>
                 <div className="field">
-                    <label htmlFor="ing-desc">Summary</label>
-                    <textarea id="ing-desc" rows={10} value={form.description} onChange={(e) => set('description', e.target.value)} />
-                    <p className="hint">Shown to users on the ingredient screen. Check it against the source before marking it verified.</p>
+                    <div className="label-row">
+                        <label htmlFor="ing-desc">Summary</label>
+                        <button type="button" className="btn btn-small" onClick={generateSummary} disabled={busy || generating}>
+                            {generating ? 'Generating…' : form.description.trim() ? 'Regenerate with AI' : 'Generate with AI'}
+                        </button>
+                    </div>
+                    <textarea id="ing-desc" rows={10} value={form.description} onChange={(e) => set('description', e.target.value)} disabled={generating} />
+                    {generated
+                        ? <p className="hint hint-ai">AI draft. Check it against the source, edit if needed, save, then mark it as human verified.</p>
+                        : <p className="hint">Shown to users on the ingredient screen. Check it against the source before marking it verified.</p>}
                 </div>
                 <div className="field-grid">
                     <div className="field">
@@ -236,7 +269,7 @@ function IngredientEditor({ ingredient, onDirtyChange, onSaved, onDeleted }: Edi
 
             <div className="detail-actions">
                 <button type="button" className="btn btn-danger-outline btn-push-left" onClick={() => setDeleting(true)} disabled={busy}>Delete</button>
-                <button type="button" className="btn" onClick={() => { setForm(formFrom(ingredient)); setError(null); }} disabled={busy || !dirty}>Discard changes</button>
+                <button type="button" className="btn" onClick={() => { setForm(formFrom(ingredient)); setError(null); setGenerated(false); }} disabled={busy || !dirty}>Discard changes</button>
                 <button type="submit" className="btn btn-primary" disabled={busy || !dirty}>{busy ? 'Saving…' : 'Save changes'}</button>
             </div>
         </form>
