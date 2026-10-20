@@ -7,6 +7,7 @@ import {
     AdminUser, AdminUserPatch,
     AdminProduct, AdminProductPatch,
     AdminIngredient, AdminIngredientPatch, AdminIngredientCreate, AdminIngredientListQuery,
+    IngredientSummaryRequest, IngredientSummaryResponse,
 } from '@suppsense/shared-types';
 import { apiFetch, apiFetchJson } from './http';
 
@@ -163,4 +164,12 @@ export function updateAdminIngredient(ingredientId: string, patch: AdminIngredie
  */
 export function deleteAdminIngredient(ingredientId: string, adminPassword: string): Promise<MessageResponse> {
     return apiFetchJson<MessageResponse>(`${ADMIN}/ingredients/${id(ingredientId)}`, 'DELETE', { password: adminPassword });
+}
+/**
+ * asks the server to generate an AI summary for an ingredient. Nothing is saved -
+ * put the result in the form, review it, then save and mark it verified.
+ * @param context the form's current (possibly unsaved) name, dosages and source
+ */
+export function generateAdminIngredientSummary(ingredientId: string, context: Partial<IngredientSummaryRequest> = {}): Promise<IngredientSummaryResponse> {
+    return apiFetchJson<IngredientSummaryResponse>(`${ADMIN}/ingredients/${id(ingredientId)}/summary`, 'POST', context);
 }

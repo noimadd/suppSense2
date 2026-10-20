@@ -8,6 +8,7 @@ import { getDashboardStats, getDashboardActivity } from '../db/admin/stats';
 import { searchUsers, getAdminUserById, updateUser, deleteUser, AdminUserPatch } from '../db/admin/users';
 import { searchProducts, getAdminProductById, updateProduct, acceptSubmission, deleteProduct, AdminProductPatch } from '../db/admin/products';
 import { searchIngredients, getIngredientById, createIngredient, updateIngredient, deleteIngredient, AdminIngredientPatch } from '../db/admin/ingredients';
+import { generateIngredientSummary } from '../ai/ingredient_summary';
 
 // Mounted at /api/admin behind requireAuth + requireAdmin (see server.ts),
 // so every handler here can rely on req.user (JWT claims) and req.admin (DB row).
@@ -67,12 +68,13 @@ function pickFields<T>(body: any, validators: Record<string, (v: unknown) => boo
     return out as T;
 }
 
-// Each entry needs an ingredient_id (link an existing ingredient) or a name (find or create one by name)
+// Each entry needs an ingredient_id (link an existing ingredient) or a name (find or create one by name).
+// An amount of 0 is allowed for label ingredients with no stated amount (flavours, sweeteners and so on).
 function isIngredientList(v: unknown): boolean {
     return Array.isArray(v) && v.every((entry) =>
         entry && typeof entry === 'object' &&
         (isNonEmptyString(entry.ingredient_id) || isNonEmptyString(entry.name)) &&
-        (isNonEmptyString(entry.unit) && entry.unit.length < 50 && entry.amount !== undefined && entry.amount > 0)
+        (isNonEmptyString(entry.unit) && entry.unit.length < 50 && entry.amount !== undefined && entry.amount !== null && Number(entry.amount) >= 0)
     );
 }
 
@@ -280,6 +282,29 @@ router.patch('/ingredients/:id', async (req, res) => {
     const ingredient = await updateIngredient(req.params.id, patch);
     if (!ingredient) { return notFound(res, 'Ingredient'); }
     res.json(ingredient);
+});
+
+// body (optional): name, recommended_dosage, maximum_dosage, paper_url - unsaved values from the form.
+// Returns { summary, source_url } without saving, so the admin can review before saving and verifying.
+// source_url is only suggested when the ingredient has no source yet, and only if it checks out (see ai/ingredient_summary.ts).
+router.post('/ingredients/:id/summary', async (req, res) => {
+    const ingredient = await getIngredientById(req.params.id);
+    if (!ingredient) { return notFound(res, 'Ingredient'); }
+
+    const overrides = pickFields<AdminIngredientPatch>(req.body, {
+        name: isNonEmptyString,
+        recommended_dosage: isString,
+        maximum_dosage: isString,
+        paper_url: isString,
+    });
+
+    const result = await generateIngredientSummary({
+        name: overrides.name ?? ingredient.name,
+        recommended_dosage: overrides.recommended_dosage ?? ingredient.recommended_dosage,
+        maximum_dosage: overrides.maximum_dosage ?? ingredient.maximum_dosage,
+        paper_url: overrides.paper_url ?? ingredient.paper_url,
+    });
+    res.json(result);
 });
 
 // body: { password } - the admin's own password, to confirm. Removes the ingredient from every product that lists it.

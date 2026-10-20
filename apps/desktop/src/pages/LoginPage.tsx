@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { signIn, takeSignOutReason, useSession } from '../lib/session';
 import { errorMessage } from '../lib/format';
+import logo from '../assets/unirec_portrait_orange.png';
 
 export default function LoginPage() {
     const session = useSession();
@@ -31,6 +32,7 @@ export default function LoginPage() {
     return (
         <div className="login">
             <form className="login-card" onSubmit={submit}>
+                <img src={logo} alt="" className="login-logo" />
                 <h1>SuppSense Admin</h1>
                 <p className="page-subtitle">Sign in with your SuppSense admin account.</p>
 

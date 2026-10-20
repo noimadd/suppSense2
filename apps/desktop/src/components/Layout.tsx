@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { signOut, useSession } from '../lib/session';
+import logo from '../assets/unirec_portrait_orange.png';
 
 const NAV = [
     { to: '/', label: 'Dashboard', end: true },
@@ -15,7 +16,10 @@ export default function Layout() {
     return (
         <div className="shell">
             <aside className="sidebar">
-                <div className="sidebar-brand">SuppSense Admin</div>
+                <div className="sidebar-brand">
+                    <img src={logo} alt="" className="sidebar-logo" />
+                    SuppSense Admin
+                </div>
                 <nav aria-label="Admin sections">
                     {NAV.map((item) => (
                         <NavLink key={item.to} to={item.to} end={item.end} className="nav-link">
