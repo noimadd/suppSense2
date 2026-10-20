@@ -259,6 +259,9 @@ tbody tr:hover { background: #fafafa; }
 .split { display: grid; grid-template-columns: minmax(270px, 320px) 1fr; gap: 1.25rem; align-items: start; }
 .split-list { display: flex; flex-direction: column; gap: 0.6rem; position: sticky; top: 1rem; max-height: calc(100vh - 2rem); }
 .split-list .search { max-width: none; }
+/* only the list itself may shrink and scroll - otherwise a long list squashes the search box and filter buttons */
+.split-list > * { flex-shrink: 0; }
+.split-list > .pick-list { flex: 1 1 auto; min-height: 0; }
 .split-detail { min-width: 0; }
 
 .pick-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
